@@ -72,21 +72,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'], $_POST['action'
 // Handle admin adding a new user to a specific position
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add_user') {
     $name = filter_var($_POST['name'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);  // No need to validate as required
+    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
     $comment = filter_var($_POST['comment'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $position = intval($_POST['position']);
 
-    if ($name && $position > 0) {  // Check only if name and position are valid
-        // Shift all users below the specified position
+    if ($name && $position > 0) {
         $db->exec("UPDATE waiting_list SET position = position + 1 WHERE position >= $position");
 
-        // Insert the new user at the specified position
         $stmt = $db->prepare('INSERT INTO waiting_list (name, email_or_phone, comment, time, confirmed, position) VALUES (:name, :email, :comment, :time, :confirmed, :position)');
         $stmt->bindValue(':name', $name, SQLITE3_TEXT);
-        $stmt->bindValue(':email', $email, SQLITE3_TEXT);  // Can be empty or any format
+        $stmt->bindValue(':email', $email, SQLITE3_TEXT);
         $stmt->bindValue(':comment', $comment, SQLITE3_TEXT);
         $stmt->bindValue(':time', time(), SQLITE3_INTEGER);
-        $stmt->bindValue(':confirmed', 1, SQLITE3_INTEGER);  // Admin-added users are confirmed by default
+        $stmt->bindValue(':confirmed', 1, SQLITE3_INTEGER);
         $stmt->bindValue(':position', $position, SQLITE3_INTEGER);
         $stmt->execute();
 
@@ -150,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         echo "<td>" . htmlspecialchars($row['name']) . "</td>";
         echo "<td>" . htmlspecialchars($row['email_or_phone']) . "</td>";
         echo "<td>" . htmlspecialchars($row['comment']) . "</td>";
-        echo "<td>" . date('Y-m-d H:i', $row['time']) . "</td>";  // Only date and minutes, no seconds
+        echo "<td>" . date('Y-m-d H:i', $row['time']) . "</td>";
         echo "</tr>";
     }
 
@@ -174,37 +172,13 @@ $results = $db->query('SELECT * FROM waiting_list ORDER BY position ASC');
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
+            margin: 0;
+            box-sizing: border-box;
         }
-        h1 {
+        h1, h2 {
             color: #2C3E50;
             text-align: center;
-            margin-bottom: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-        button {
-            padding: 5px 10px;
-            background-color: #3498db;
-            border: none;
-            color: white;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        button.remove {
-            background-color: #e74c3c;
-        }
-        form {
-            display: inline;
+            margin: 20px 0;
         }
         #logout {
             text-align: right;
@@ -213,13 +187,80 @@ $results = $db->query('SELECT * FROM waiting_list ORDER BY position ASC');
         #logout a {
             color: #3498db;
             text-decoration: none;
+            font-size: 1rem;
         }
         #logout a:hover {
             text-decoration: underline;
         }
-        #controls {
-            margin-bottom: 20px;
+        #controls, .table-container {
             text-align: center;
+            margin-bottom: 20px;
+        }
+        #controls form, .table-container {
+            display: inline-block;
+            width: 100%;
+            max-width: 600px;
+        }
+        form {
+            display: inline-block;
+            width: 100%;
+        }
+        button, input[type="text"], input[type="email"], input[type="number"] {
+            padding: 8px 12px;
+            margin: 5px 0;
+            font-size: 1rem;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+        }
+        button.remove {
+            background-color: #e74c3c;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .action-buttons form {
+            display: flex;
+            flex-direction: column;
+        }
+        .action-buttons button {
+            margin: 2px 0;
+            font-size: 0.9rem;
+        }
+        .responsive-hide {
+            display: none;
+        }
+        
+        @media (min-width: 600px) {
+            button, input[type="text"], input[type="email"], input[type="number"] {
+                width: auto;
+            }
+            .action-buttons form {
+                flex-direction: row;
+            }
+            .responsive-hide {
+                display: table-cell;
+            }
         }
     </style>
 </head>
@@ -238,7 +279,7 @@ $results = $db->query('SELECT * FROM waiting_list ORDER BY position ASC');
     </div>
 
     <!-- Form for admin to add a new user -->
-    <div>
+    <div class="form-container">
         <h2>Add a New User</h2>
         <form method="POST">
             <input type="hidden" name="action" value="add_user">
@@ -254,33 +295,35 @@ $results = $db->query('SELECT * FROM waiting_list ORDER BY position ASC');
         </form>
     </div>
 
-    <table>
-        <tr>
-            <th>Position</th>
-            <th>Name</th>
-            <th>Email/Phone</th>
-            <th>Comment</th>
-            <th>Signup Time</th>
-            <th>Actions</th>
-        </tr>
-        <?php while ($row = $results->fetchArray(SQLITE3_ASSOC)) { ?>
+    <div class="table-container">
+        <table>
             <tr>
-                <td><?php echo $row['position']; ?></td>
-                <td><?php echo htmlspecialchars($row['name']); ?></td>
-                <td><?php echo htmlspecialchars($row['email_or_phone']); ?></td>
-                <td><?php echo htmlspecialchars($row['comment']); ?></td>
-                <td><?php echo date('Y-m-d H:i', $row['time']); ?></td>
-                <td>
-                    <form method="POST">
-                        <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
-                        <button type="submit" name="action" value="move_up">Move Up</button>
-                        <button type="submit" name="action" value="move_down">Move Down</button>
-                        <button type="submit" name="action" value="remove" class="remove">Remove</button>
-                    </form>
-                </td>
+                <th>Position</th>
+                <th>Name</th>
+                <th class="responsive-hide">Email/Phone</th>
+                <th>Comment</th>
+                <th class="responsive-hide">Signup Time</th>
+                <th>Actions</th>
             </tr>
-        <?php } ?>
-    </table>
+            <?php while ($row = $results->fetchArray(SQLITE3_ASSOC)) { ?>
+                <tr>
+                    <td><?php echo $row['position']; ?></td>
+                    <td><?php echo htmlspecialchars($row['name']); ?></td>
+                    <td class="responsive-hide"><?php echo htmlspecialchars($row['email_or_phone']); ?></td>
+                    <td><?php echo htmlspecialchars($row['comment']); ?></td>
+                    <td class="responsive-hide"><?php echo date('Y-m-d H:i', $row['time']); ?></td>
+                    <td class="action-buttons">
+                        <form method="POST">
+                            <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                            <button type="submit" name="action" value="move_up">Move Up</button>
+                            <button type="submit" name="action" value="move_down">Move Down</button>
+                            <button type="submit" name="action" value="remove" class="remove">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            <?php } ?>
+        </table>
+    </div>
 
     <?php if ($results->numColumns() === 0): ?>
         <p>No users on the waiting list.</p>
