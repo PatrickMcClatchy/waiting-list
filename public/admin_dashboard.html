@@ -37,8 +37,8 @@
             padding: 8px 12px;
             margin: 5px 0;
             font-size: 1rem;
-            width: 100%;
-            max-width: 100%;
+            width: auto;  /* Adjust buttons to fit their content */
+            max-width: none;  /* Remove width restrictions */
             box-sizing: border-box;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -49,6 +49,7 @@
             cursor: pointer;
             border: none;
             border-radius: 4px;
+            padding: 6px 12px;  /* Reduce padding for all buttons */
         }
         button.remove {
             background-color: #e74c3c;
@@ -67,7 +68,13 @@
         th {
             background-color: #f4f4f4;
         }
-    </style>
+        /* Make action buttons smaller */
+        .table-container button {
+            font-size: 0.8rem;
+            padding: 4px 8px;  /* Smaller padding */
+            margin: 2px; /* Reduce margin */
+        }
+    </style>    
     <script>
         // Load the waiting list when the page loads
         document.addEventListener('DOMContentLoaded', loadWaitingList);
