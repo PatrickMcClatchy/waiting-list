@@ -1,34 +1,24 @@
-<?php
-// Enable error reporting for debugging
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Waiting List</title>
-
-    <!-- Load jQuery library for AJAX functionality -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
     <script>
         $(document).ready(function() {
-            // Handle form submission for signup
             $('#signupForm').submit(function(event) {
-                event.preventDefault();  // Prevent the default form submission
+                event.preventDefault(); // Prevent the default form submission
 
-                // Use jQuery's post method to send form data to 'add_user.php'
-                $.post('add_user.php', $(this).serialize(), function(response) {
-                    $('#signupResponse').html(response);  // Display the response message
-                });
+                // Use jQuery's post method to send form data to 'api_proxy.php' with 'add_user.php' as endpoint
+                $.post('api_proxy.php?endpoint=add_user.php', $(this).serialize(), function(response) {
+    $('#signupResponse').html(response.message); // Display the response message
+    $('#signupResponse').css("color", response.success ? "green" : "red");
+}, 'json');
+
             });
         });
     </script>
-
     <style>
         /* Reset default styles */
         body, html {
@@ -96,7 +86,6 @@ error_reporting(E_ALL);
         /* Response Message */
         #signupResponse {
             margin-top: 10px;
-            color: green;
             text-align: center;
         }
 
@@ -136,7 +125,7 @@ error_reporting(E_ALL);
 
         <!-- Login Link -->
         <div class="login-link">
-            <p><a href="login.php" target="_blank">Log in</a></p>
+            <p><a href="login.html" target="_blank">Log in</a></p>
         </div>
     </div>
 </body>

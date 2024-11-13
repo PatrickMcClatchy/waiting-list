@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Waiting List</title>
+    <style>
+        /* CSS Styling */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        h1, h2 {
+            color: #2C3E50;
+            text-align: center;
+            margin: 20px 0;
+        }
+        #logout {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        #logout button {
+            padding: 8px 12px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #controls, .table-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        button, input[type="text"], input[type="email"], input[type="number"] {
+            padding: 8px 12px;
+            margin: 5px 0;
+            font-size: 1rem;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+        }
+        button.remove {
+            background-color: #e74c3c;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+    <script>
+        // Load the waiting list when the page loads
+        document.addEventListener('DOMContentLoaded', loadWaitingList);
+
+        function loadWaitingList() {
+            fetch('api_proxy.php?endpoint=get_waiting_list.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayWaitingList(data.data);
+                    } else {
+                        alert("Failed to load waiting list.");
+                    }
+                });
+        }
+
+        function displayWaitingList(users) {
+            const table = document.getElementById('waitingListTable');
+            table.innerHTML = `<tr>
+                <th>Position</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Comment</th>
+                <th>Actions</th>
+            </tr>`;
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.position}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email_or_phone}</td>
+                    <td>${user.comment}</td>
+                    <td>
+                        <button onclick="moveUser(${user.id}, 'up')">Up</button>
+                        <button onclick="moveUser(${user.id}, 'down')">Down</button>
+                        <button onclick="removeUser(${user.id})" class="remove">Remove</button>
+                    </td>
+                `;
+                table.appendChild(row);
+            });
+        }
+
+        function addUser() {
+            const formData = new FormData(document.getElementById('addUserForm'));
+            fetch('api_proxy.php?endpoint=add_user.php', {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadWaitingList();
+                } else {
+                    alert(data.message || 'Failed to add user.');
+                }
+            });
+        }
+
+        function removeUser(id) {
+            fetch('api_proxy.php?endpoint=remove_user.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `id=${id}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadWaitingList();
+                } else {
+                    alert("Failed to remove user.");
+                }
+            });
+        }
+
+        function moveUser(id, direction) {
+            fetch('api_proxy.php?endpoint=move_user.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `id=${id}&direction=${direction}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadWaitingList();
+                } else {
+                    alert("Failed to move user.");
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div id="logout">
+        <button onclick="window.location.href='api_proxy.php?endpoint=logout.php'">Logout</button>
+    </div>
+
+    <h1>Admin Panel - Waiting List</h1>
+
+    <div id="controls">
+        <form onsubmit="event.preventDefault(); loadWaitingList();">
+            <button type="button" onclick="window.print()">Export to Print</button>
+            <button type="submit">Refresh</button>
+        </form>
+    </div>
+
+    <!-- Form for admin to add a new user -->
+    <div class="form-container">
+        <h2>Add a New User</h2>
+        <form id="addUserForm" onsubmit="event.preventDefault(); addUser();">
+            <label for="name">Name:</label>
+            <input type="text" name="name" required>
+            <label for="email">Email:</label>
+            <input type="email" name="email">
+            <label for="comment">Comment:</label>
+            <input type="text" name="comment">
+            <label for="position">Position:</label>
+            <input type="number" name="position" min="1" required>
+            <button type="submit">Add User</button>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <table id="waitingListTable"></table>
+    </div>
+</body>
+</html>
