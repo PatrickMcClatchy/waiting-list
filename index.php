@@ -30,55 +30,89 @@ error_reporting(E_ALL);
     </script>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        /* Reset default styles */
+        body, html {
             margin: 0;
             padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
         }
-        h1 {
-            color: #2C3E50;
-            text-align: left;
-            margin-bottom: 10px;
-        }
-        .container {
-            width: 90%;
+
+        #signup-section {
+            width: 100%;
             max-width: 500px;
-            margin-top: 20px;
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .login-link {
-            margin-top: 20px;
+
+        #signup-section header h1 {
             text-align: center;
+            color: #2C3E50;
+            margin-bottom: 15px;
         }
+
+        /* Form Styles */
         form {
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            margin-bottom: 10px;
+            align-items: stretch;
         }
-        input, textarea {
-            padding: 10px;
-            margin-bottom: 10px;
+
+        input, textarea, button {
+            padding: 12px;
+            margin-bottom: 15px;
             width: 100%;
             border-radius: 5px;
             border: 1px solid #ccc;
             box-sizing: border-box;
         }
+
         button {
-            padding: 10px 15px;
             background-color: #3498db;
             border: none;
             color: white;
-            border-radius: 5px;
             cursor: pointer;
-            align-self: flex-start;
         }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Response Message */
         #signupResponse {
             margin-top: 10px;
             color: green;
-            text-align: left;
+            text-align: center;
+        }
+
+        /* Login Link */
+        .login-link p {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-link p a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .login-link p a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
