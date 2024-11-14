@@ -76,6 +76,29 @@
         }
     </style>    
     <script>
+        // Check if the user is logged in before loading the page content
+document.addEventListener('DOMContentLoaded', checkLoginStatus);
+
+function checkLoginStatus() {
+    fetch('api_proxy.php?endpoint=check_session.php')
+        .then(response => response.json())
+        .then(data => {
+            if (!data.loggedIn) {
+                // If not logged in, redirect to login page
+                window.location.href = 'login.html';
+            }
+        })
+        .catch(error => {
+            console.error('Error checking login status:', error);
+            alert('An error occurred. Please try again.');
+            // Redirect to login page in case of error
+            window.location.href = 'login.html';
+        });
+}
+
+
+
+
         // Load the waiting list when the page loads
         document.addEventListener('DOMContentLoaded', loadWaitingList);
 

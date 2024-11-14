@@ -2,4 +2,7 @@
 session_start();
 session_unset();
 session_destroy();
-echo json_encode(['success' => true, 'message' => 'Logged out successfully']);
+
+// Redirect to the logged out page
+header('Location: logged_out.html');
+exit;

@@ -3,16 +3,24 @@ session_start();
 header('Content-Type: application/json');
 
 try {
-    // Hardcoded hashed password (replace with your actual hash)
-    $hashed_password = '$2y$06$So/CYnud39L2W43MPmSTcOr8WosL1drKI9B2ktEKk.J0gkXO52FFK';
+    // Store the hashed password securely, e.g., in an environment variable or configuration file
+    $config = include('config.php'); // Adjust the path based on your structure
+    $hashed_password = $config['admin_password_hash']; // Assume this is securely set in an environment variable
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = $_POST['password'];
 
-        // Check password
+        // Check if password is correct
         if (password_verify($password, $hashed_password)) {
+            // Set session variables
             $_SESSION['loggedin'] = true;
-            echo json_encode(['success' => true]);
+            $_SESSION['LAST_ACTIVITY'] = time(); // Update last activity time
+            $_SESSION['CREATED'] = time();       // Record session creation time
+            
+            // Regenerate session ID on successful login
+            session_regenerate_id(true);
+
+            echo json_encode(['success' => true, 'message' => 'Logged in successfully.']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Invalid password.']);
         }
@@ -20,7 +28,8 @@ try {
         echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
     }
 } catch (Exception $e) {
-    // In case of any errors, send a JSON error response
-    echo json_encode(['success' => false, 'message' => 'Server error: ' . $e->getMessage()]);
+    // Log the error to a secure server log and send a generic error message to the client
+    error_log('Login error: ' . $e->getMessage());
+    echo json_encode(['success' => false, 'message' => 'Server error. Please try again later.']);
 }
 exit;
