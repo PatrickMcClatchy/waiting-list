@@ -1,0 +1,46 @@
+/* export_style.css # hier wird definiert wie die exportierte Tablle nacher aussieht */
+
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    color: #333;
+}
+h1 {
+    font-size: 1.5em;
+    text-align: center;
+    color: #2C3E50;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+th {
+    background-color: #f4f4f4;
+    color: #2C3E50;
+    font-weight: bold;
+}
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1em;
+    color: white;
+    background-color: #3498db;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+button:hover {
+    background-color: #2980b9;
+}

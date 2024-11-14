@@ -86,7 +86,7 @@
                     if (data.success) {
                         displayWaitingList(data.data);
                     } else {
-                        alert("Failed to load waiting list.");
+                        alert("Faileda to load waiting list.");
                     }
                 });
         }
@@ -164,6 +164,62 @@
                 }
             });
         }
+
+        function exportWaitingList() {
+    fetch('api_proxy.php?endpoint=export_waiting_list.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Link to external CSS file for styling
+                let exportContent = `
+                <html>
+                <head>
+                    <title>Waiting List Export</title>
+                    <link rel="stylesheet" type="text/css" href="css/export_style.css">
+                </head>
+                <body>
+                    <h1>Waiting List - Export</h1>
+                    <table>
+                        <tr>
+                            <th>Position</th>
+                            <th>Name</th>
+                            <th>Email/Phone</th>
+                            <th>Comment</th>
+                            <th>Signup Time</th>
+                        </tr>`;
+
+                // Add table rows with data
+                data.data.forEach(row => {
+                    exportContent += `
+                        <tr>
+                            <td>${row.position}</td>
+                            <td>${row.name}</td>
+                            <td>${row.email_or_phone}</td>
+                            <td>${row.comment}</td>
+                            <td>${new Date(row.time * 1000).toLocaleString()}</td>
+                        </tr>`;
+                });
+
+                exportContent += `
+                    </table>
+                    <button onclick="window.print()">Print</button>
+                </body>
+                </html>`;
+
+                // Open a new window and print the content
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(exportContent);
+                printWindow.document.close();
+            } else {
+                alert(data.message || "Failed to export waiting list.");
+            }
+        })
+        .catch(error => {
+            console.error('Error exporting waiting list:', error);
+            alert("An error occurred while exporting the waiting list.");
+        });
+}
+
     </script>
 </head>
 <body>
@@ -174,10 +230,9 @@
     <h1>Admin Panel - Waiting List</h1>
 
     <div id="controls">
-        <form onsubmit="event.preventDefault(); loadWaitingList();">
-            <button type="button" onclick="window.print()">Export to Print</button>
-            <button type="submit">Refresh</button>
-        </form>
+        <!-- Adjusted Export Button to call exportWaitingList function -->
+        <button onclick="exportWaitingList()">Export Waiting List</button>
+        <button onclick="window.location.reload()">Refresh</button>
     </div>
 
     <!-- Form for admin to add a new user -->
