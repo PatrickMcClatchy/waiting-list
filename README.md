@@ -1,43 +1,62 @@
 # Waiting List Application
 
-A web-based waiting list application with an admin page for managing entries. This application helps keep track of people waiting for a service or event, allowing admins to reorder or remove entries from the list.
+This application manages a waiting list, allowing users to sign up and admins to add, remove, and reorder users.
 
-## Features
+## Project Structure
 
-- **User List Management**: Add users to the waiting list.
-- **Admin Control**: Admins can reorder and remove entries as needed.
-- **Database**: Uses an SQLite database (`waiting_list.db`) to store user data.
-- **PHP-Based**: The application is written in PHP and is compatible with most servers that support PHP.
+```
+project_root/
+├── public/                   # Public files for users and admins
+│   ├── index.html            # Main page for users to join the waiting list
+│   ├── admin_dashboard.html  # Admin dashboard to manage the list
+│   ├── api_proxy.php         # Proxy to access backend API
+│   └── css/                  # Optional CSS files
+├── api/                      # Backend functionality (API endpoints)
+│   ├── add_user.php          # Adds a user to the waiting list
+│   ├── remove_user.php       # Removes a user by ID
+│   ├── move_user.php         # Moves a user up or down in position
+│   ├── get_waiting_list.php  # Fetches the waiting list
+│   ├── login.php             # Processes admin login
+│   ├── logout.php            # Processes admin logout
+└── waiting_list.db           # SQLite database file
+```
 
-## File Structure
+## Key Features
 
-- `index.php`: Main page where users can add themselves to the waiting list.
-- `admin.php`: Admin interface for viewing, reordering, and removing users from the list.
-- `add_user.php`: Script to handle adding users to the list.
-- `get_list.php`: Retrieves the current list for display.
-- `waiting_list.db`: SQLite database file that stores all list data.
+- **User Sign-Up**: Public users can access `index.html` to join the waiting list.
+- **Admin Dashboard**: `admin_dashboard.html` provides an interface for admins to manage the list by adding, removing, or reordering users.
+- **API Proxy**: `api_proxy.php` routes frontend requests to backend functionality located in the `api` folder.
 
-## Installation
+## Setup Instructions
 
-1. **Clone this repository**: Download the project files by cloning the repository to your local machine:
+1. Clone the repository to your local machine.
+2. Ensure you have PHP and SQLite installed.
+3. Set up the SQLite database (`waiting_list.db`) in the project root.
+
+4. Start a local server with PHP:
    ```bash
-   git clone https://github.com/PatrickMcClatchy/waiting-list.git
+   php -S localhost:8000 -t public
+   ```
+5. Open `http://localhost:8000` in your browser to access the application.
 
-2. **Upload files to your server**: Transfer the project files to a PHP-enabled server.
+## Deployment
 
-3. **Set permissions**: Ensure PHP has read and write permissions for `waiting_list.db` to allow the application to store data.
+1. Upload the contents of the repository to your server.
+2. Set the document root of your web server to the `public` folder.
+3. Ensure the server has PHP and SQLite installed.
+4. Make sure the `waiting_list.db` file is readable and writable by the server, and that the API folder and its files are secured from direct access.
 
-## Usage
+## API Endpoints
 
-1. **Adding Users**: Go to `index.php`, where users can add themselves to the waiting list by filling out the provided form.
+Each backend function has its own file in the `api` folder, accessed through `api_proxy.php`:
+- **Add User**: `api_proxy.php?endpoint=add_user.php`
+- **Remove User**: `api_proxy.php?endpoint=remove_user.php`
+- **Move User**: `api_proxy.php?endpoint=move_user.php`
+- **Get Waiting List**: `api_proxy.php?endpoint=get_waiting_list.php`
 
-2. **Admin Management**: Access `admin.php` to view and manage the waiting list. The admin page allows you to reorder entries or remove users from the list as necessary.
+## Contributing
 
-## Requirements
-
-- PHP version 7.0 or higher
-- SQLite support enabled in PHP
-
-## License
-
-This project is open-source and available under the MIT License.
+When contributing:
+1. Organize frontend (public-facing) and backend (API) code as shown.
+2. Use `api_proxy.php` for all frontend requests to the backend.
+3. Test that frontend requests are successfully connecting to backend functions.
