@@ -16,7 +16,6 @@
                         // Hide the form and display the confirmation message
                         $('#signup-section').html(`
                             <h2>You've successfully signed up!</h2>
-                            <p>Your position in the waiting list is: <strong>${response.position}</strong></p>
                             <p>Click the link below to download your confirmation PDF:</p>
                             <a href="api_proxy.php?endpoint=generate_pdf.php&name=${encodeURIComponent(response.name)}&email=${encodeURIComponent(response.email)}&position=${response.position}" target="_blank">Download Confirmation PDF</a>
                         `);
