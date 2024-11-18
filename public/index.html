@@ -4,18 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Waiting List</title>
-    <link rel="stylesheet" href="css/admin.css">   
-
+    <link rel="stylesheet" href="css/main.css">   
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+    <style>
+        .g-recaptcha {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0; /* Add spacing around the widget */
+        }
+
+        /* Style the submit button when disabled */
+        button:disabled {
+            background-color: #d3d3d3; /* Light grey background */
+            color: #808080;          /* Darker grey text */
+            cursor: not-allowed;     /* Show 'not-allowed' cursor */
+            border: 1px solid #a9a9a9; /* Optional: border color */
+        }
+    </style>
 
     <script>
-        $(document).ready(function() {
-            $('#signupForm').submit(function(event) {
-                event.preventDefault(); // Prevent the default form submission
-    
-                // Use jQuery's post method to send form data to 'api_proxy.php' with 'add_user.php' as endpoint
-                $.post('api_proxy.php?endpoint=add_user.php', $(this).serialize(), function(response) {
-                    if(response.success) {
+        function enableSubmit() {
+            document.getElementById('submitButton').disabled = false; // Enable the button
+        }
+
+        $(document).ready(function () {
+            $('#signupForm').submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                // Use jQuery's post method to send form data
+                $.post('api_proxy.php?endpoint=add_user.php', $(this).serialize(), function (response) {
+                    if (response.success) {
                         // Hide the form and display the confirmation message
                         $('#signup-section').html(`
                             <h2>You've successfully signed up!</h2>
@@ -29,9 +49,7 @@
                 }, 'json');
             });
         });
-    </script>    
-
-
+    </script>
 </head>
 
 <body>
@@ -45,7 +63,11 @@
                 <input type="text" name="name" placeholder="Enter your name" required>
                 <input type="email" name="email" placeholder="Enter your email" required>
                 <textarea name="comment" placeholder="Enter a comment (optional)"></textarea>
-                <button type="submit">Sign Up</button>
+                <div class="g-recaptcha" 
+                     data-sitekey="6LeK9oIqAAAAAJQR2aXqxZiY-TDG4BQglyC1qTNq" 
+                     data-callback="enableSubmit">
+                </div>
+                <button id="submitButton" type="submit" disabled>Sign Up</button>
             </form>
 
             <div id="signupResponse"></div>
@@ -58,3 +80,4 @@
     </div>
 </body>
 </html>
+s
