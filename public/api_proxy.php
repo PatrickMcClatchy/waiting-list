@@ -22,5 +22,16 @@ if (!file_exists($targetFile)) {
     exit;
 }
 
+// If the requested endpoint is PDF generation, handle it differently
+if ($endpoint === 'generate_pdf.php') {
+    // Set the response type to binary PDF
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: attachment; filename="waiting_list_confirmation.pdf"');
+
+    // Include the PDF generation logic (this will output the PDF directly)
+    include __DIR__ . '/..api/generate_pdf.php';
+    exit;
+}
+
 // Include and execute the target backend script
 include $targetFile;
