@@ -4,77 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Waiting List</title>
-    <style>
-        /* CSS Styling */
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            margin: 0;
-            box-sizing: border-box;
-        }
-        h1, h2 {
-            color: #2C3E50;
-            text-align: center;
-            margin: 20px 0;
-        }
-        #logout {
-            text-align: right;
-            margin-bottom: 20px;
-        }
-        #logout button {
-            padding: 8px 12px;
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #controls, .table-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        button, input[type="text"], input[type="email"], input[type="number"] {
-            padding: 8px 12px;
-            margin: 5px 0;
-            font-size: 1rem;
-            width: auto;  /* Adjust buttons to fit their content */
-            max-width: none;  /* Remove width restrictions */
-            box-sizing: border-box;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        button {
-            background-color: #3498db;
-            color: white;
-            cursor: pointer;
-            border: none;
-            border-radius: 4px;
-            padding: 6px 12px;  /* Reduce padding for all buttons */
-        }
-        button.remove {
-            background-color: #e74c3c;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-        /* Make action buttons smaller */
-        .table-container button {
-            font-size: 0.8rem;
-            padding: 4px 8px;  /* Smaller padding */
-            margin: 2px; /* Reduce margin */
-        }
-    </style>    
+    <link rel="stylesheet" href="css/admin.css">   
     <script>
         // Check if the user is logged in before loading the page content
 document.addEventListener('DOMContentLoaded', checkLoginStatus);
