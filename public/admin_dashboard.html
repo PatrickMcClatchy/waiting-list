@@ -142,7 +142,7 @@ function checkLoginStatus() {
 
         function addUser() {
             const formData = new FormData(document.getElementById('addUserForm'));
-            fetch('api_proxy.php?endpoint=add_user.php', {
+            fetch('api_proxy.php?endpoint=add_user_admin.php', {
                 method: 'POST',
                 body: new URLSearchParams(formData)
             })
