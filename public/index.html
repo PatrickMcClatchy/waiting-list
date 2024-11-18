@@ -9,16 +9,25 @@
         $(document).ready(function() {
             $('#signupForm').submit(function(event) {
                 event.preventDefault(); // Prevent the default form submission
-
+    
                 // Use jQuery's post method to send form data to 'api_proxy.php' with 'add_user.php' as endpoint
                 $.post('api_proxy.php?endpoint=add_user.php', $(this).serialize(), function(response) {
-    $('#signupResponse').html(response.message); // Display the response message
-    $('#signupResponse').css("color", response.success ? "green" : "red");
-}, 'json');
-
+                    if(response.success) {
+                        // Hide the form and display the confirmation message
+                        $('#signup-section').html(`
+                            <h2>You've successfully signed up!</h2>
+                            <p>Your position in the waiting list is: <strong>${response.position}</strong></p>
+                            <p>Click the link below to download your confirmation PDF:</p>
+                            <a href="api_proxy.php?endpoint=generate_pdf.php&name=${encodeURIComponent(response.name)}&email=${encodeURIComponent(response.email)}&position=${response.position}" target="_blank">Download Confirmation PDF</a>
+                        `);
+                    } else {
+                        $('#signupResponse').html(response.message); // Display the response message
+                        $('#signupResponse').css("color", "red");
+                    }
+                }, 'json');
             });
         });
-    </script>
+    </script>    
     <style>
         /* Reset default styles */
         body, html {

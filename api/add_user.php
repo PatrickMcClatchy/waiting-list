@@ -32,7 +32,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'])) {
         $stmt->bindValue(':position', $position, SQLITE3_INTEGER);
         $stmt->execute();
 
-        echo json_encode(['success' => true, 'message' => 'User added successfully at position ' . $position]);
+        // Return the response with name, email, and position
+        echo json_encode([
+            'success' => true,
+            'message' => 'User added successfully at position ' . $position,
+            'name' => $name,
+            'email' => $email,
+            'position' => $position
+        ]);
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'message' => 'Failed to add user: ' . $e->getMessage()]);
     }
