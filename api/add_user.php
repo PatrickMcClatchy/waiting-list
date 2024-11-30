@@ -1,6 +1,25 @@
 <?php
 header('Content-Type: application/json');
 
+// Verify reCAPTCHA
+if (!isset($_POST['g-recaptcha-response'])) {
+    echo json_encode(['success' => false, 'message' => 'CAPTCHA not completed.']);
+    exit;
+}
+
+$recaptchaResponse = $_POST['g-recaptcha-response'];
+$secretKey = '6LeK9oIqAAAAAHGWBhQvZ90QvEe4y7Kc4chgc62h'; // Your reCAPTCHA secret key
+
+// Send POST request to Google's reCAPTCHA verification API
+$verifyURL = 'https://www.google.com/recaptcha/api/siteverify';
+$response = file_get_contents($verifyURL . '?secret=' . $secretKey . '&response=' . $recaptchaResponse);
+$responseKeys = json_decode($response, true);
+
+if (!$responseKeys['success']) {
+    echo json_encode(['success' => false, 'message' => 'CAPTCHA verification failed.']);
+    exit;
+}
+
 // Connect to the database
 try {
     $db = new SQLite3('../waiting_list.db');
