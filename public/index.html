@@ -31,6 +31,7 @@
 
     // Function to check if the waiting list is open
 // Function to check if the waiting list is open
+// Function to check if the waiting list is open
 function checkWaitingListState() {
     $.get('api_proxy.php?endpoint=get_waiting_list_state.php', function(response) {
         console.log(response); // Log the response to the console for debugging
@@ -38,12 +39,17 @@ function checkWaitingListState() {
         if (response.success) {
             if (response.isOpen === 1) {
                 // Enable the form if the waiting list is open
+                $('#signupForm').show(); // Show the form
+                $('#waitingListClosedMessage').hide(); // Hide the closed message
                 $('#signupForm input, #signupForm select, #signupForm textarea, #signupForm button').prop('disabled', false);
                 $('#signupResponse').text(''); // Clear any messages
+                $('#recaptcha').show(); // Show CAPTCHA
             } else {
-                // Disable the form if the waiting list is closed
-                $('#signupForm input, #signupForm select, #signupForm textarea, #signupForm button').prop('disabled', true);
+                // Disable the form and hide it if the waiting list is closed
+                $('#signupForm').hide(); // Hide the form
+                $('#waitingListClosedMessage').show(); // Show the waiting list closed message
                 $('#signupResponse').html('<p>The waiting list is currently closed.</p>').css("color", "red");
+                $('#recaptcha').hide(); // Hide CAPTCHA
             }
         } else {
             $('#signupResponse').html('<p>Unable to check waiting list state. Please try again later.</p>').css("color", "red");

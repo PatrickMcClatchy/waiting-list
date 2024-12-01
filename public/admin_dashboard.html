@@ -188,13 +188,15 @@
         }
 
         // Load the toggle state for the waiting list
+// Load the toggle state for the waiting list
 function loadToggleState() {
     fetch('api_proxy.php?endpoint=get_waiting_list_state.php')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Set the checkbox state based on the 'isOpen' value from the response
-                document.getElementById('waitingListToggle').checked = (data.isOpen === 1); 
+                const isOpen = data.isOpen === 1;
+                document.getElementById('waitingListToggle').checked = isOpen;
+                updateSwitchStatus(isOpen);
             } else {
                 alert('Failed to fetch waiting list state.');
             }
@@ -219,7 +221,8 @@ function updateToggleState() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Waiting list state updated successfully!');
+            // alert('Waiting list state updated successfully!');
+            updateSwitchStatus(isOpen);
         } else {
             alert('Failed to update waiting list state.');
         }
@@ -230,6 +233,18 @@ function updateToggleState() {
     });
 }
 
+// Update the status message and switch appearance
+function updateSwitchStatus(isOpen) {
+    const statusMessage = document.getElementById('waitingListStatus');
+    if (isOpen) {
+        statusMessage.innerHTML = "Waiting list is <strong>open</strong>.";
+        statusMessage.style.color = '#2ecc71'; // Green
+    } else {
+        statusMessage.innerHTML = "Waiting list is <strong>closed</strong>.";
+        statusMessage.style.color = '#e74c3c'; // Red
+    }
+}
+
 // Initialize the toggle state on page load
 document.addEventListener('DOMContentLoaded', function() {
     loadToggleState(); // Load the initial state when the page is loaded
@@ -237,6 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listener for the toggle state change
     document.getElementById('waitingListToggle').addEventListener('change', updateToggleState);
 });
+
 
     </script>
 </head>
@@ -250,11 +266,13 @@ document.addEventListener('DOMContentLoaded', function() {
     <div id="controls">
         <button onclick="exportWaitingList()">Export Waiting List</button>
         <button onclick="window.location.reload()">Refresh</button>
-        <label>
+        <label for="waitingListToggle" class="switch">
             <input type="checkbox" id="waitingListToggle" onclick="updateToggleState()">
-            Open Waiting List
+            <span class="slider"></span>
         </label>
+        <p id="waitingListStatus">Waiting list is <strong>open</strong>.</p>
     </div>
+    
 
     <div class="form-container">
         <h2>Add a New User</h2>
