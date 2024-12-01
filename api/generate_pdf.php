@@ -32,3 +32,4 @@ if (isset($_GET['name']) && isset($_GET['email']) && isset($_GET['position'])) {
 } else {
     echo json_encode(['success' => false, 'message' => 'Missing required parameters for PDF generation']);
 }
+

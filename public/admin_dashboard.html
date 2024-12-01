@@ -4,34 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Waiting List</title>
-    <link rel="stylesheet" href="css/admin.css">   
+    <link rel="stylesheet" href="css/admin.css">
     <script>
         // Check if the user is logged in before loading the page content
-document.addEventListener('DOMContentLoaded', checkLoginStatus);
+        document.addEventListener('DOMContentLoaded', checkLoginStatus);
 
-function checkLoginStatus() {
-    fetch('api_proxy.php?endpoint=check_session.php')
-        .then(response => response.json())
-        .then(data => {
-            if (!data.loggedIn) {
-                // If not logged in, redirect to login page
-                window.location.href = 'login.html';
-            }
-        })
-        .catch(error => {
-            console.error('Error checking login status:', error);
-            alert('An error occurred. Please try again.');
-            // Redirect to login page in case of error
-            window.location.href = 'login.html';
+        function checkLoginStatus() {
+            fetch('api_proxy.php?endpoint=check_session.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.loggedIn) {
+                        // If not logged in, redirect to login page
+                        window.location.href = 'login.html';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking login status:', error);
+                    alert('An error occurred. Please try again.');
+                    // Redirect to login page in case of error
+                    window.location.href = 'login.html';
+                });
+        }
+
+        // Load the waiting list and toggle state on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadWaitingList();
+            loadToggleState();
         });
-}
 
-
-
-
-        // Load the waiting list when the page loads
-        document.addEventListener('DOMContentLoaded', loadWaitingList);
-
+        // Fetch and display the waiting list
         function loadWaitingList() {
             fetch('api_proxy.php?endpoint=get_waiting_list.php')
                 .then(response => response.json())
@@ -39,8 +40,12 @@ function checkLoginStatus() {
                     if (data.success) {
                         displayWaitingList(data.data);
                     } else {
-                        alert("Faileda to load waiting list.");
+                        alert("Failed to load the waiting list.");
                     }
+                })
+                .catch(error => {
+                    console.error('Error loading waiting list:', error);
+                    alert("An error occurred while loading the waiting list.");
                 });
         }
 
@@ -83,6 +88,10 @@ function checkLoginStatus() {
                 } else {
                     alert(data.message || 'Failed to add user.');
                 }
+            })
+            .catch(error => {
+                console.error('Error adding user:', error);
+                alert('Failed to add user.');
             });
         }
 
@@ -99,6 +108,10 @@ function checkLoginStatus() {
                 } else {
                     alert("Failed to remove user.");
                 }
+            })
+            .catch(error => {
+                console.error('Error removing user:', error);
+                alert('Failed to remove user.');
             });
         }
 
@@ -115,63 +128,115 @@ function checkLoginStatus() {
                 } else {
                     alert("Failed to move user.");
                 }
+            })
+            .catch(error => {
+                console.error('Error moving user:', error);
+                alert('Failed to move user.');
             });
         }
 
         function exportWaitingList() {
-    fetch('api_proxy.php?endpoint=export_waiting_list.php')
+            fetch('api_proxy.php?endpoint=export_waiting_list.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        let exportContent = `
+                        <html>
+                        <head>
+                            <title>Waiting List Export</title>
+                            <link rel="stylesheet" type="text/css" href="css/export_style.css">
+                        </head>
+                        <body>
+                            <h1>Waiting List - Export</h1>
+                            <table>
+                                <tr>
+                                    <th>Position</th>
+                                    <th>Name</th>
+                                    <th>Email/Phone</th>
+                                    <th>Comment</th>
+                                    <th>Signup Time</th>
+                                </tr>`;
+
+                        data.data.forEach(row => {
+                            exportContent += `
+                                <tr>
+                                    <td>${row.position}</td>
+                                    <td>${row.name}</td>
+                                    <td>${row.email_or_phone}</td>
+                                    <td>${row.comment}</td>
+                                    <td>${new Date(row.time * 1000).toLocaleString()}</td>
+                                </tr>`;
+                        });
+
+                        exportContent += `
+                            </table>
+                            <button onclick="window.print()">Print</button>
+                        </body>
+                        </html>`;
+
+                        const printWindow = window.open('', '_blank');
+                        printWindow.document.write(exportContent);
+                        printWindow.document.close();
+                    } else {
+                        alert(data.message || "Failed to export waiting list.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error exporting waiting list:', error);
+                    alert("An error occurred while exporting the waiting list.");
+                });
+        }
+
+        // Load the toggle state for the waiting list
+function loadToggleState() {
+    fetch('api_proxy.php?endpoint=get_waiting_list_state.php')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Link to external CSS file for styling
-                let exportContent = `
-                <html>
-                <head>
-                    <title>Waiting List Export</title>
-                    <link rel="stylesheet" type="text/css" href="css/export_style.css">
-                </head>
-                <body>
-                    <h1>Waiting List - Export</h1>
-                    <table>
-                        <tr>
-                            <th>Position</th>
-                            <th>Name</th>
-                            <th>Email/Phone</th>
-                            <th>Comment</th>
-                            <th>Signup Time</th>
-                        </tr>`;
-
-                // Add table rows with data
-                data.data.forEach(row => {
-                    exportContent += `
-                        <tr>
-                            <td>${row.position}</td>
-                            <td>${row.name}</td>
-                            <td>${row.email_or_phone}</td>
-                            <td>${row.comment}</td>
-                            <td>${new Date(row.time * 1000).toLocaleString()}</td>
-                        </tr>`;
-                });
-
-                exportContent += `
-                    </table>
-                    <button onclick="window.print()">Print</button>
-                </body>
-                </html>`;
-
-                // Open a new window and print the content
-                const printWindow = window.open('', '_blank');
-                printWindow.document.write(exportContent);
-                printWindow.document.close();
+                // Set the checkbox state based on the 'isOpen' value from the response
+                document.getElementById('waitingListToggle').checked = (data.isOpen === 1); 
             } else {
-                alert(data.message || "Failed to export waiting list.");
+                alert('Failed to fetch waiting list state.');
             }
         })
         .catch(error => {
-            console.error('Error exporting waiting list:', error);
-            alert("An error occurred while exporting the waiting list.");
+            console.error('Error fetching waiting list state:', error);
+            alert("An error occurred while fetching the waiting list state.");
         });
 }
+
+// Update the toggle state for the waiting list
+function updateToggleState() {
+    const isOpen = document.getElementById('waitingListToggle').checked ? 1 : 0;
+
+    fetch('api_proxy.php?endpoint=toggle_waiting_list.php', {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded' 
+        },
+        body: `isOpen=${isOpen}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Waiting list state updated successfully!');
+        } else {
+            alert('Failed to update waiting list state.');
+        }
+    })
+    .catch(error => {
+        console.error('Error updating waiting list state:', error);
+        alert('An error occurred while updating the waiting list state.');
+    });
+}
+
+// Initialize the toggle state on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadToggleState(); // Load the initial state when the page is loaded
+    
+    // Event listener for the toggle state change
+    document.getElementById('waitingListToggle').addEventListener('change', updateToggleState);
+});
 
     </script>
 </head>
@@ -183,12 +248,14 @@ function checkLoginStatus() {
     <h1>Admin Panel - Waiting List</h1>
 
     <div id="controls">
-        <!-- Adjusted Export Button to call exportWaitingList function -->
         <button onclick="exportWaitingList()">Export Waiting List</button>
         <button onclick="window.location.reload()">Refresh</button>
+        <label>
+            <input type="checkbox" id="waitingListToggle" onclick="updateToggleState()">
+            Open Waiting List
+        </label>
     </div>
 
-    <!-- Form for admin to add a new user -->
     <div class="form-container">
         <h2>Add a New User</h2>
         <form id="addUserForm" onsubmit="event.preventDefault(); addUser();">

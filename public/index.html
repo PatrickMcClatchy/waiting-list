@@ -24,32 +24,63 @@
         }
     </style>
 
-    <script>
-        function enableSubmit() {
-            document.getElementById('submitButton').disabled = false; // Enable the button
+<script>
+    function enableSubmit() {
+        document.getElementById('submitButton').disabled = false; // Enable the button
+    }
+
+    // Function to check if the waiting list is open
+// Function to check if the waiting list is open
+function checkWaitingListState() {
+    $.get('api_proxy.php?endpoint=get_waiting_list_state.php', function(response) {
+        console.log(response); // Log the response to the console for debugging
+        
+        if (response.success) {
+            if (response.isOpen === 1) {
+                // Enable the form if the waiting list is open
+                $('#signupForm input, #signupForm select, #signupForm textarea, #signupForm button').prop('disabled', false);
+                $('#signupResponse').text(''); // Clear any messages
+            } else {
+                // Disable the form if the waiting list is closed
+                $('#signupForm input, #signupForm select, #signupForm textarea, #signupForm button').prop('disabled', true);
+                $('#signupResponse').html('<p>The waiting list is currently closed.</p>').css("color", "red");
+            }
+        } else {
+            $('#signupResponse').html('<p>Unable to check waiting list state. Please try again later.</p>').css("color", "red");
         }
+    }, 'json').fail(function() {
+        $('#signupResponse').html('<p>An error occurred. Please try again later.</p>').css("color", "red");
+    });
+}
 
-        $(document).ready(function () {
-            $('#signupForm').submit(function (event) {
-                event.preventDefault(); // Prevent default form submission
 
-                // Use jQuery's post method to send form data
-                $.post('api_proxy.php?endpoint=add_user.php', $(this).serialize(), function (response) {
-                    if (response.success) {
-                        // Hide the form and display the confirmation message
-                        $('#signup-section').html(`
-                            <h2>You've successfully signed up!</h2>
-                            <p>Click the link below to download your confirmation PDF:</p>
-                            <a href="api_proxy.php?endpoint=generate_pdf.php&name=${encodeURIComponent(response.name)}&email=${encodeURIComponent(response.email)}&position=${response.position}" target="_blank">Download Confirmation PDF</a>
-                        `);
-                    } else {
-                        $('#signupResponse').html(response.message); // Display the response message
-                        $('#signupResponse').css("color", "red");
-                    }
-                }, 'json');
-            });
+
+    // Run this script when the document is ready
+    $(document).ready(function () {
+        // Check waiting list state on page load
+        checkWaitingListState();
+
+        // Form submission handling
+        $('#signupForm').submit(function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Use jQuery's post method to send form data
+            $.post('api_proxy.php?endpoint=add_user.php', $(this).serialize(), function (response) {
+                if (response.success) {
+                    // Hide the form and display the confirmation message
+                    $('#signup-section').html(`
+                        <h2>You've successfully signed up!</h2>
+                        <p>Click the link below to download your confirmation PDF:</p>
+                        <a href="api_proxy.php?endpoint=generate_pdf.php&name=${encodeURIComponent(response.name)}&email=${encodeURIComponent(response.email)}&position=${response.position}&language=${encodeURIComponent(response.language)}" target="_blank">Download Confirmation PDF</a>
+                    `);
+                } else {
+                    $('#signupResponse').html(response.message).css("color", "red"); // Display the response message
+                }
+            }, 'json');
         });
-    </script>
+    });
+</script>
+
 </head>
 
 <body>
@@ -60,15 +91,27 @@
                 <h1>Join Our Waiting List</h1>
             </header>
             <form id="signupForm">
-                <input type="text" name="name" placeholder="Enter your name" required>
-                <input type="email" name="email" placeholder="Enter your email" required>
-                <textarea name="comment" placeholder="Enter a comment (optional)"></textarea>
+                <input type="text" name="name" placeholder="Name" required>
+                <input type="text" name="email" placeholder="Phone or E-Mail" required>
+                <textarea name="comment" placeholder="Comment"></textarea>
+            
+                <!-- Add Language Dropdown -->
+                <select name="language" required>
+                    <option value="" disabled selected>Select your language</option>
+                    <option value="English">English</option>
+                    <option value="Spanish">Spanish</option>
+                    <option value="French">French</option>
+                    <option value="German">German</option>
+                    <option value="Other">Other</option>
+                </select>
+            
                 <div class="g-recaptcha" 
                      data-sitekey="6LeK9oIqAAAAAJQR2aXqxZiY-TDG4BQglyC1qTNq" 
                      data-callback="enableSubmit">
                 </div>
                 <button id="submitButton" type="submit" disabled>Sign Up</button>
             </form>
+            
 
             <div id="signupResponse"></div>
         </section>

@@ -1,0 +1,58 @@
+<?php
+try {
+    // Create or open the SQLite database
+    $db = new SQLite3('waiting_list.db');
+
+    // Check if the database opened successfully
+    if (!$db) {
+        echo "Failed to open database: " . $db->lastErrorMsg();
+        exit;
+    }
+
+    // Create the waiting_list table if it doesn't exist
+    $createWaitingListTable = $db->exec("CREATE TABLE IF NOT EXISTS waiting_list (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        email_or_phone TEXT,
+        comment TEXT,
+        language TEXT,
+        time INTEGER NOT NULL,
+        confirmed INTEGER DEFAULT 1,
+        position INTEGER NOT NULL
+    )");
+
+    if (!$createWaitingListTable) {
+        echo "Error creating waiting_list table: " . $db->lastErrorMsg();
+    } else {
+        echo "Waiting list table created or already exists.<br>";
+    }
+
+    // Create the settings table if it doesn't exist
+    $createSettingsTable = $db->exec("CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+    )");
+
+    if (!$createSettingsTable) {
+        echo "Error creating settings table: " . $db->lastErrorMsg();
+    } else {
+        echo "Settings table created or already exists.<br>";
+    }
+
+    // Insert the initial waiting list state if it doesn't exist
+    $stmt = $db->prepare("INSERT OR IGNORE INTO settings (key, value) VALUES (:key, :value)");
+    $stmt->bindValue(':key', 'waiting_list_open', SQLITE3_TEXT);
+    $stmt->bindValue(':value', '1', SQLITE3_TEXT); // Default state is open ('1')
+    
+    if ($stmt->execute()) {
+        echo "Initial settings inserted successfully.<br>";
+    } else {
+        echo "Failed to insert initial settings: " . $db->lastErrorMsg() . "<br>";
+    }
+
+    echo "Database and tables setup complete!<br>";
+
+} catch (Exception $e) {
+    echo "Failed to create database or tables: " . $e->getMessage();
+}
+?>
