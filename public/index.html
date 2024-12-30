@@ -38,12 +38,11 @@ function checkWaitingListState() {
         
         if (response.success) {
             if (response.isOpen === 1) {
-                // Enable the form if the waiting list is open
-                $('#signupForm').show(); // Show the form
-                $('#waitingListClosedMessage').hide(); // Hide the closed message
-                $('#signupForm input, #signupForm select, #signupForm textarea, #signupForm button').prop('disabled', false);
-                $('#signupResponse').text(''); // Clear any messages
-                $('#recaptcha').show(); // Show CAPTCHA
+    $('#signupForm').show(); // Show the form
+    $('#waitingListClosedMessage').hide(); // Hide the closed message
+    $('#signupForm input, #signupForm select, #signupForm textarea').prop('disabled', false);
+    $('#submitButton').prop('disabled', true); // Keep submit button disabled initially
+    $('#recaptcha').show(); // Show CAPTCHA
             } else {
                 // Disable the form and hide it if the waiting list is closed
                 $('#signupForm').hide(); // Hide the form
@@ -75,10 +74,45 @@ function checkWaitingListState() {
                 if (response.success) {
                     // Hide the form and display the confirmation message
                     $('#signup-section').html(`
-                        <h2>You've successfully signed up!</h2>
-                        <p>Click the link below to download your confirmation PDF:</p>
-                        <a href="api_proxy.php?endpoint=generate_pdf.php&name=${encodeURIComponent(response.name)}&email=${encodeURIComponent(response.email)}&position=${response.position}&language=${encodeURIComponent(response.language)}" target="_blank">Download Confirmation PDF</a>
-                    `);
+    <div style="text-align: center; margin-top: 20px;">
+        <!-- Large Green Checkmark -->
+        <div style="
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;">
+            <svg class=checkmark xmlns="http://www.w3.org/2000/svg" width="60px" height="60px" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6L9 17l-5-5"/>
+            </svg>
+        </div>
+        <!-- Success Message -->
+        <h2 style="color: #4CAF50;">You've successfully signed up!</h2>
+        <p>Click the link below to download your confirmation PDF:</p>
+        <!-- Blue Download Button -->
+        <a href="api_proxy.php?endpoint=generate_pdf.php&name=${encodeURIComponent(response.name)}&email=${encodeURIComponent(response.email)}&position=${response.position}&language=${encodeURIComponent(response.language)}" target="_blank" style="
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #007BFF;
+            color: #ffffff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-top: 10px;">
+            <!-- Download Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                <path d="M12 5v14M19 12l-7 7-7-7"/>
+            </svg>
+            Download Confirmation PDF
+        </a>
+    </div>
+`);
                 } else {
                     $('#signupResponse').html(response.message).css("color", "red"); // Display the response message
                 }
