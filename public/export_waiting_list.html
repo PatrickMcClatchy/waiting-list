@@ -6,6 +6,7 @@
     <title>Waiting List Export</title>
     <link rel="stylesheet" type="text/css" href="css/export_style.css">
     <style>
+        /* General styling for the page */
         .container {
             display: flex;
         }
@@ -19,6 +20,82 @@
             padding: 8px;
             text-align: left;
         }
+
+        /* Styling for the delete confirmation modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        .modal-header {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+            text-align: center;
+        }
+        .modal-body {
+            padding: 15px;
+            text-align: center;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+        .modal-footer button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-confirm {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-cancel {
+            background-color: #f44336;
+            color: white;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        /* Styled message container */
+        #message-container {
+            margin: 20px;
+            padding: 15px;
+            display: none;
+            border-radius: 5px;
+            font-size: 14px;
+            text-align: center;
+        }
+        #message-container.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        #message-container.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
     </style>
     <script>
         // Check if the user is logged in before loading the page content
@@ -29,30 +106,26 @@
                 .then(response => response.json())
                 .then(data => {
                     if (!data.loggedIn) {
-                        // If not logged in, redirect to login page
                         window.location.href = 'login.html';
                     } else {
-                        // Load the waiting list if logged in
                         loadWaitingList();
                     }
                 })
                 .catch(error => {
                     console.error('Error checking login status:', error);
                     alert('An error occurred. Please try again.');
-                    // Redirect to login page in case of error
                     window.location.href = 'login.html';
                 });
         }
 
         function loadWaitingList() {
-            fetch('api_proxy.php?endpoint=get_waiting_list.php') // Use the correct endpoint
+            fetch('api_proxy.php?endpoint=get_waiting_list.php')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
                         const leftTable = document.getElementById('leftTable');
                         const rightTable = document.getElementById('rightTable');
 
-                        // Populate the first table (left column)
                         data.data.slice(0, Math.ceil(data.data.length / 2)).forEach(user => {
                             const row = leftTable.insertRow();
                             row.innerHTML = `
@@ -62,7 +135,6 @@
                             `;
                         });
 
-                        // Populate the second table (right column)
                         data.data.slice(Math.ceil(data.data.length / 2)).forEach(user => {
                             const row = rightTable.insertRow();
                             row.innerHTML = `
@@ -72,49 +144,68 @@
                             `;
                         });
                     } else {
-                        alert(data.message || "Failed to export waiting list.");
+                        displayMessage(data.message || "Failed to export waiting list.", 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Error exporting waiting list:', error);
-                    alert("An error occurred while exporting the waiting list.");
+                    displayMessage("An error occurred while exporting the waiting list.", 'error');
                 });
         }
 
         function printAndPrompt() {
             const mediaQueryList = window.matchMedia('print');
-            
+
             const handlePrintEvent = (event) => {
                 if (!event.matches) {
-                    // Print dialog has been closed
-                    mediaQueryList.removeEventListener('change', handlePrintEvent); // Clean up listener
-                    
-                    if (confirm('Do you want to clear the waiting list?')) {
-                        // Clear the list if confirmed
-                        fetch('api_proxy.php?endpoint=clear_waiting_list.php', {
-                            method: 'POST'
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert('Waiting list cleared successfully.');
-                                window.close();
-                            } else {
-                                alert('Failed to clear the waiting list.');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error clearing waiting list:', error);
-                            alert('An error occurred while clearing the waiting list.');
-                        });
-                    } else {
-                        window.close();
-                    }
+                    mediaQueryList.removeEventListener('change', handlePrintEvent);
+                    showModal(); // Show custom modal instead of confirm dialog
                 }
             };
 
             mediaQueryList.addEventListener('change', handlePrintEvent);
             window.print();
+        }
+
+        function showModal() {
+            document.getElementById('modal').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function hideModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function confirmClearList() {
+            fetch('api_proxy.php?endpoint=clear_waiting_list.php', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayMessage('Waiting list cleared successfully.', 'success');
+                    hideModal();
+                    window.close();
+                } else {
+                    displayMessage('Failed to clear the waiting list.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error clearing waiting list:', error);
+                displayMessage('An error occurred while clearing the waiting list.', 'error');
+            });
+        }
+
+        function displayMessage(message, type) {
+            const messageContainer = document.getElementById('message-container');
+            messageContainer.textContent = message;
+            messageContainer.className = type === 'success' ? 'success' : 'error';
+            messageContainer.style.display = 'block';
+
+            setTimeout(() => {
+                messageContainer.style.display = 'none';
+            }, 5000);
         }
     </script>
 </head>
@@ -137,5 +228,19 @@
         </table>
     </div>
     <button onclick="printAndPrompt()">Print</button>
+
+    <!-- Message container -->
+    <div id="message-container"></div>
+
+    <!-- Modal for confirmation -->
+    <div id="overlay" class="overlay"></div>
+    <div id="modal" class="modal">
+        <div class="modal-header">Clear Waiting List</div>
+        <div class="modal-body">Are you sure you want to clear the waiting list?</div>
+        <div class="modal-footer">
+            <button class="btn-confirm" onclick="confirmClearList()">Yes</button>
+            <button class="btn-cancel" onclick="hideModal()">No</button>
+        </div>
+    </div>
 </body>
 </html>
