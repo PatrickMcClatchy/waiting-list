@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waiting List Export</title>
+    <link rel="stylesheet" type="text/css" href="css/export_style.css">
+    <style>
+        .container {
+            display: flex;
+        }
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+    <script>
+        // Check if the user is logged in before loading the page content
+        document.addEventListener('DOMContentLoaded', checkLoginStatus);
+
+        function checkLoginStatus() {
+            fetch('api_proxy.php?endpoint=check_session.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.loggedIn) {
+                        // If not logged in, redirect to login page
+                        window.location.href = 'login.html';
+                    } else {
+                        // Load the waiting list if logged in
+                        loadWaitingList();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking login status:', error);
+                    alert('An error occurred. Please try again.');
+                    // Redirect to login page in case of error
+                    window.location.href = 'login.html';
+                });
+        }
+
+        function loadWaitingList() {
+            fetch('api_proxy.php?endpoint=get_waiting_list.php') // Use the correct endpoint
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const leftTable = document.getElementById('leftTable');
+                        const rightTable = document.getElementById('rightTable');
+
+                        // Populate the first table (left column)
+                        data.data.slice(0, Math.ceil(data.data.length / 2)).forEach(user => {
+                            const row = leftTable.insertRow();
+                            row.innerHTML = `
+                                <td>${user.position}</td>
+                                <td>${user.name}</td>
+                                <td>${user.language}</td>
+                            `;
+                        });
+
+                        // Populate the second table (right column)
+                        data.data.slice(Math.ceil(data.data.length / 2)).forEach(user => {
+                            const row = rightTable.insertRow();
+                            row.innerHTML = `
+                                <td>${user.position}</td>
+                                <td>${user.name}</td>
+                                <td>${user.language}</td>
+                            `;
+                        });
+                    } else {
+                        alert(data.message || "Failed to export waiting list.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error exporting waiting list:', error);
+                    alert("An error occurred while exporting the waiting list.");
+                });
+        }
+
+        function printAndPrompt() {
+            const mediaQueryList = window.matchMedia('print');
+            
+            const handlePrintEvent = (event) => {
+                if (!event.matches) {
+                    // Print dialog has been closed
+                    mediaQueryList.removeEventListener('change', handlePrintEvent); // Clean up listener
+                    
+                    if (confirm('Do you want to clear the waiting list?')) {
+                        // Clear the list if confirmed
+                        fetch('api_proxy.php?endpoint=clear_waiting_list.php', {
+                            method: 'POST'
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('Waiting list cleared successfully.');
+                                window.close();
+                            } else {
+                                alert('Failed to clear the waiting list.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error clearing waiting list:', error);
+                            alert('An error occurred while clearing the waiting list.');
+                        });
+                    } else {
+                        window.close();
+                    }
+                }
+            };
+
+            mediaQueryList.addEventListener('change', handlePrintEvent);
+            window.print();
+        }
+    </script>
+</head>
+<body>
+    <h1>Waiting List - Export</h1>
+    <div class="container">
+        <table id="leftTable">
+            <tr>
+                <th>Listenplatz</th>
+                <th>Name</th>
+                <th>(Sprache)</th>
+            </tr>
+        </table>
+        <table id="rightTable">
+            <tr>
+                <th>Listenplatz</th>
+                <th>Name</th>
+                <th>(Sprache)</th>
+            </tr>
+        </table>
+    </div>
+    <button onclick="printAndPrompt()">Print</button>
+</body>
+</html>

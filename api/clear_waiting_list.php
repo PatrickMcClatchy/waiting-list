@@ -7,14 +7,9 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
 try {
     $db = new SQLite3('../waiting_list.db');
-    $results = $db->query('SELECT * FROM waiting_list ORDER BY position ASC');
+    $db->exec('DELETE FROM waiting_list');
 
-    $exportData = [];
-    while ($row = $results->fetchArray(SQLITE3_ASSOC)) {
-        $exportData[] = $row;
-    }
-
-    echo json_encode(['success' => true, 'data' => $exportData]);
+    echo json_encode(['success' => true, 'message' => 'Waiting list cleared successfully']);
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
 }
