@@ -9,14 +9,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = filter_var($_POST['name'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
     $comment = filter_var($_POST['comment'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $position = intval($_POST['position']);
 
-    if ($name && $position > 0) {
+    if ($name) {
         try {
             $db = new SQLite3('../waiting_list.db');
 
-            // Shift other users down to make space for the new user at the desired position
-            $db->exec("UPDATE waiting_list SET position = position + 1 WHERE position >= $position");
+            // Get the current maximum position
+            $result = $db->query('SELECT COALESCE(MAX(position), 0) AS max_position FROM waiting_list');
+            $row = $result->fetchArray(SQLITE3_ASSOC);
+            $position = $row['max_position'] + 1;
 
             // Insert the new user
             $stmt = $db->prepare('INSERT INTO waiting_list (name, email_or_phone, comment, time, confirmed, position) VALUES (:name, :email, :comment, :time, :confirmed, :position)');
@@ -33,6 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
         }
     } else {
-        echo json_encode(['success' => false, 'message' => 'Invalid name or position']);
+        echo json_encode(['success' => false, 'message' => 'Invalid name']);
     }
 }

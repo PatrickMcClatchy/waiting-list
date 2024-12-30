@@ -79,6 +79,7 @@
 
         function addUser() {
             const formData = new FormData(document.getElementById('addUserForm'));
+            formData.delete('position');
             fetch('api_proxy.php?endpoint=add_user_admin.php', {
                 method: 'POST',
                 body: new URLSearchParams(formData)
@@ -314,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <input type="text" name="name" placeholder="Name" required oninput="updatePreview()">
             <input type="email" name="email" placeholder="Email" oninput="updatePreview()">
             <input type="text" name="comment" placeholder="Comment" oninput="updatePreview()">
-            <input type="number" name="position" placeholder="Position" required>
+           <!-- <input type="number" name="position" placeholder="Position" min="1" required oninput="updatePreview()"> -->
             <button type="submit">Add User</button>
         </form>
     </div>
