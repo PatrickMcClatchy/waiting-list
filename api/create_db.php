@@ -50,6 +50,12 @@ try {
         echo "Failed to insert initial settings: " . $db->lastErrorMsg() . "<br>";
     }
 
+    // Insert the scheduled open times if it doesn't exist
+    $stmt = $db->prepare("INSERT OR IGNORE INTO settings (key, value) VALUES (:key, :value)");
+    $stmt->bindValue(':key', 'scheduled_open_times', SQLITE3_TEXT);
+    $stmt->bindValue(':value', 'Monday 09:00,Thursday 14:00', SQLITE3_TEXT); // Example times
+    $stmt->execute();
+
     echo "Database and tables setup complete!<br>";
 
 } catch (Exception $e) {
