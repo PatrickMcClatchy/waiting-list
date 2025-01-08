@@ -27,14 +27,43 @@ try {
     $openTimes = explode(',', $scheduledOpenTimes);
 
     // Get the current day and time
-    $currentDay = date('l'); // Full day name (e.g., 'Monday')
-    $currentTime = date('H:i'); // Current time in HH:MM format
+    $currentDateTime = new DateTime();
+    $currentDay = $currentDateTime->format('l'); // Full day name (e.g., 'Monday')
+    $currentTimestamp = $currentDateTime->getTimestamp();
 
-    // Check if the current day and time match any of the scheduled open times
+    error_log("Current Day: {$currentDay}");
+    error_log("Current Time: {$currentDateTime->format('Y-m-d H:i:s')}");
+
     $isOpen = false;
+
     foreach ($openTimes as $openTime) {
         list($day, $time) = explode(' ', $openTime);
-        if ($currentDay === $day && $currentTime >= $time) {
+
+        // Skip if the day does not match
+        if ($currentDay !== $day) {
+            error_log("Day mismatch - Current: {$currentDay}, Scheduled: {$day}");
+            continue;
+        }
+
+        // Create DateTime object for scheduled time
+        $scheduledDateTime = DateTime::createFromFormat('H:i', $time);
+        if ($scheduledDateTime === false) {
+            error_log("Invalid time format: $time");
+            continue;
+        }
+
+        // Set the scheduled time to today's date
+        $scheduledDateTime->setDate(
+            $currentDateTime->format('Y'),
+            $currentDateTime->format('m'),
+            $currentDateTime->format('d')
+        );
+
+        error_log("Scheduled Time: {$scheduledDateTime->format('Y-m-d H:i:s')}");
+
+        // Compare timestamps - open list if the current time is later or equal
+        if ($currentTimestamp <= $scheduledDateTime->getTimestamp()) {
+            error_log("Match found - Opening waiting list");
             $isOpen = true;
             break;
         }
@@ -52,6 +81,7 @@ try {
         }
     }
 } catch (Exception $e) {
+    error_log("Error: " . $e->getMessage());
     $response['message'] = $e->getMessage();
 }
 
