@@ -100,25 +100,49 @@
             });
         }
 
-        function removeUser(id) {
-            fetch('api_proxy.php?endpoint=remove_user.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `id=${id}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    loadWaitingList();
-                } else {
-                    alert("Failed to remove user.");
-                }
-            })
-            .catch(error => {
-                console.error('Error removing user:', error);
-                alert('Failed to remove user.');
-            });
+        function removeUser(userId) {
+    const modal = document.getElementById('confirmationModal');
+    const confirmBtn = document.getElementById('confirmBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+
+    modal.style.display = 'block';
+
+    confirmBtn.onclick = function() {
+        modal.style.display = 'none';
+        performUserRemoval(userId);
+    }
+
+    cancelBtn.onclick = function() {
+        modal.style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
         }
+    }
+}
+
+function performUserRemoval(userId) {
+    fetch('api_proxy.php?endpoint=remove_user.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `id=${userId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadWaitingList();
+            showPopupMessage('User removed!');
+        } else {
+            alert("Failed to remove user.");
+        }
+    })
+    .catch(error => {
+        console.error('Error removing user:', error);
+        alert('Failed to remove user.');
+    });
+}
 
         function moveUser(id, direction) {
             fetch('api_proxy.php?endpoint=move_user.php', {
@@ -312,6 +336,7 @@
                 <input type="text" name="name" placeholder="Name" required oninput="updatePreview()">
                 <input type="text" name="email" placeholder="Email or Phone" oninput="updatePreview()">
                 <input type="text" name="comment" placeholder="Comment" oninput="updatePreview()">
+                <input type="text" name="language" placeholder="Language" required oninput="updatePreview()"> <!-- Add name attribute -->
                 <button type="submit">Add User</button>
             </form>
         </div>
@@ -328,6 +353,14 @@
 
     <div class="table-container">
         <table id="waitingListTable"></table>
+    </div>
+
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <p>Are you sure you want to remove this user?</p>
+            <button id="confirmBtn">Yes</button>
+            <button id="cancelBtn">No</button>
+        </div>
     </div>
 </body>
 </html>

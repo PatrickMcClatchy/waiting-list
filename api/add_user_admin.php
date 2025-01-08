@@ -9,6 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = filter_var($_POST['name'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
     $comment = filter_var($_POST['comment'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $language = filter_var($_POST['language'], FILTER_SANITIZE_FULL_SPECIAL_CHARS); // Add language
 
     if ($name) {
         try {
@@ -20,10 +21,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $position = $row['max_position'] + 1;
 
             // Insert the new user
-            $stmt = $db->prepare('INSERT INTO waiting_list (name, email_or_phone, comment, time, confirmed, position) VALUES (:name, :email, :comment, :time, :confirmed, :position)');
+            $stmt = $db->prepare('INSERT INTO waiting_list (name, email_or_phone, comment, language, time, confirmed, position) VALUES (:name, :email, :comment, :language, :time, :confirmed, :position)');
             $stmt->bindValue(':name', $name, SQLITE3_TEXT);
             $stmt->bindValue(':email', $email, SQLITE3_TEXT);
             $stmt->bindValue(':comment', $comment, SQLITE3_TEXT);
+            $stmt->bindValue(':language', $language, SQLITE3_TEXT); // Bind language
             $stmt->bindValue(':time', time(), SQLITE3_INTEGER);
             $stmt->bindValue(':confirmed', 1, SQLITE3_INTEGER);
             $stmt->bindValue(':position', $position, SQLITE3_INTEGER);
@@ -37,3 +39,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(['success' => false, 'message' => 'Invalid name']);
     }
 }
+
