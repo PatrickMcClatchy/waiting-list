@@ -103,6 +103,21 @@ input:checked + .slider:before {
     margin-left: 10px; /* Spacing between the switch and the status */
 }
 
+.forms-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+}
+
+.form-container {
+    flex: 1; /* Flex-grow: allow equal width distribution */
+    max-width: 300px; /* Optional: limit max width of forms */
+    margin: 0; /* Remove default margin */
+    min-width: 250px; /* Prevent forms from collapsing too much */
+}
 /* Smaller Form Container */
 .form-container {
     background-color: #f9f9f9;
@@ -116,7 +131,7 @@ input:checked + .slider:before {
 
 /* Smaller Header */
 .form-container h2 {
-    font-size: 1.1rem; /* Reduced font size */
+    font-size: 0.9rem; /* Reduced font size */
     margin: 5px 0 10px; /* Tighten spacing */
     text-align: center;
     color: #444;
@@ -258,6 +273,7 @@ th {
     display: flex;
     justify-content: space-between;
 }
+
 .modal {
     display: none; 
     position: fixed; 
@@ -267,24 +283,18 @@ th {
     width: 100%; 
     height: 100%; 
     overflow: auto; 
+    background-color: rgb(0,0,0); 
     background-color: rgba(0,0,0,0.4); 
 }
 
 .modal-content {
-    background-color: #fff;
+    background-color: #fefefe;
     margin: 15% auto; 
     padding: 20px;
     border: 1px solid #888;
     width: 80%; 
-    max-width: 400px;
+    max-width: 300px;
     text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-}
-
-.modal-content p {
-    font-size: 18px;
-    margin-bottom: 20px;
 }
 
 .modal-content button {
@@ -292,8 +302,6 @@ th {
     padding: 10px 20px;
     border: none;
     cursor: pointer;
-    font-size: 16px;
-    border-radius: 5px;
 }
 
 .modal-content button#confirmBtn {

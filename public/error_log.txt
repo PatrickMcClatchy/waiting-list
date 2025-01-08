@@ -1,0 +1,1 @@
+[08-Jan-2025 13:32:33 UTC] PHP Deprecated:  Constant FILTER_SANITIZE_STRING is deprecated in /Users/pad/Desktop/coding/waiting-list/api/update_closed_message.php on line 20

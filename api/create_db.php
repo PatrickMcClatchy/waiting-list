@@ -56,6 +56,12 @@ try {
     $stmt->bindValue(':value', 'Monday 09:00,Thursday 14:00', SQLITE3_TEXT); // Example times
     $stmt->execute();
 
+    // Insert the default closed message if it doesn't exist
+    $stmt = $db->prepare("INSERT OR IGNORE INTO settings (key, value) VALUES (:key, :value)");
+    $stmt->bindValue(':key', 'closed_message', SQLITE3_TEXT);
+    $stmt->bindValue(':value', 'The waiting list is currently closed.', SQLITE3_TEXT);
+    $stmt->execute();
+
     echo "Database and tables setup complete!<br>";
 
 } catch (Exception $e) {

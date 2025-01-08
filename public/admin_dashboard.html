@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Waiting List</title>
     <link rel="stylesheet" href="css/admin.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         // Check if the user is logged in before loading the page content
         document.addEventListener('DOMContentLoaded', checkLoginStatus);
@@ -309,6 +310,39 @@ function performUserRemoval(userId) {
         }, 300);
     }, 3000);
 }
+
+function fetchClosedMessage() {
+    fetch('api_proxy.php?endpoint=get_closed_message.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.message) {
+                document.getElementById('closedMessage').value = data.message;
+            } else {
+                alert('Failed to fetch the current closed message: ' + (data.message || 'Unknown error.'));
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching closed message:', error);
+            alert('An error occurred while fetching the current closed message.');
+        });
+}
+
+    function updateClosedMessage() {
+        const message = $('#closedMessage').val();
+
+        $.post('api_proxy.php?endpoint=update_closed_message.php', { message: message }, function(response) {
+            if (response.success) {
+                alert('Closed message updated successfully!');
+            } else {
+                alert('Failed to update closed message: ' + (response.message || 'Unknown error.'));
+            }
+        }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
+            console.error('Error updating closed message:', textStatus, errorThrown); // Log the error
+            alert('An error occurred while updating the closed message.');
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchClosedMessage);
     </script>
 </head>
 <body>
@@ -351,13 +385,23 @@ function performUserRemoval(userId) {
         </div>
     </div>
 
+    <div class="form-container">
+        <h2>Update Closed Message</h2>
+        <form id="updateClosedMessageForm" onsubmit="event.preventDefault(); updateClosedMessage();">
+            <label for="closedMessage"></label>
+            <textarea id="closedMessage" name="message" required></textarea>
+            <button type="submit">Update Message</button>
+        </form>
+    </div>
+
+    
     <div class="table-container">
         <table id="waitingListTable"></table>
     </div>
 
     <div id="confirmationModal" class="modal">
         <div class="modal-content">
-            <p>Are you sure you want to remove this user?</p>
+            <p id="confirmationMessage">Are you sure you want to remove this user?</p>
             <button id="confirmBtn">Yes</button>
             <button id="cancelBtn">No</button>
         </div>
