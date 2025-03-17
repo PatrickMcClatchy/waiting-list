@@ -6,7 +6,7 @@ body {
     box-sizing: border-box;
 }
 
-h1{
+h1 {
     color: #2C3E50;
     text-align: left;
     margin: 0px;
@@ -108,7 +108,7 @@ input:checked + .slider:before {
     justify-content: space-between;
     align-items: flex-start;
     gap: 20px;
-    flex-wrap: nowrap;
+    flex-wrap: wrap; /* Allow wrapping to the next line */
     overflow-x: auto;
 }
 
@@ -117,19 +117,13 @@ input:checked + .slider:before {
     max-width: 300px; /* Optional: limit max width of forms */
     margin: 0; /* Remove default margin */
     min-width: 250px; /* Prevent forms from collapsing too much */
-}
-/* Smaller Form Container */
-.form-container {
     background-color: #f9f9f9;
     padding: 8px; /* Further reduced padding */
     border: 1px solid #ddd;
     border-radius: 4px;
-    max-width: 350px; /* Smaller max width */
-    margin: 10px auto; /* Smaller margin above and below */
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Smaller Header */
 .form-container h2 {
     font-size: 0.9rem; /* Reduced font size */
     margin: 5px 0 10px; /* Tighten spacing */
@@ -138,7 +132,6 @@ input:checked + .slider:before {
     font-weight: normal; /* Lighter weight for a cleaner look */
 }
 
-/* Compact Form Fields */
 form {
     display: flex;
     flex-direction: column;
@@ -177,7 +170,6 @@ form button {
 form button:hover {
     background-color: #27ae60;
 }
-
 
 /* Table Section */
 .table-container {
@@ -265,51 +257,57 @@ th {
     background-color: #e74c3c; /* Error red color */
 }
 
-.form-container {
-    flex: 1;
-    margin: 10px;
-}
-.forms-wrapper {
-    display: flex;
-    justify-content: space-between;
-}
-
 .modal {
-    display: none; 
-    position: fixed; 
-    z-index: 1; 
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
     left: 0;
     top: 0;
-    width: 100%; 
-    height: 100%; 
-    overflow: auto; 
-    background-color: rgb(0,0,0); 
-    background-color: rgba(0,0,0,0.4); 
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
 .modal-content {
-    background-color: #fefefe;
-    margin: 15% auto; 
+    background-color: #f9f9f9; /* Match form container background */
+    margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
-    border: 1px solid #888;
-    width: 80%; 
-    max-width: 300px;
+    border: 1px solid #ddd; /* Match form container border */
+    width: 80%; /* Could be more or less, depending on screen size */
+    border-radius: 4px; /* Match form container border radius */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Match form container shadow */
     text-align: center;
+    font-family: Arial, sans-serif;
+    color: #333;
 }
 
-.modal-content button {
-    margin: 10px;
-    padding: 10px 20px;
+.modal-content p {
+    margin-bottom: 20px;
+}
+
+.btn {
+    background-color: #3498db; /* Match controls button background */
     border: none;
+    border-radius: 4px; /* Match controls button border radius */
+    color: #fff;
     cursor: pointer;
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 14px;
+}
+
+.btn:hover {
+    background-color: #2980b9; /* Match controls button hover background */
 }
 
 .modal-content button#confirmBtn {
-    background-color: #4CAF50;
+    background-color: #2ecc71; /* Match form button background */
     color: white;
 }
 
 .modal-content button#cancelBtn {
-    background-color: #f44336;
+    background-color: #e74c3c; /* Match logout button background */
     color: white;
 }

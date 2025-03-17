@@ -68,18 +68,18 @@ function checkWaitingListState() {
 }
     // Run this script when the document is ready
     $(document).ready(function () {
-        // Check waiting list state on page load
-        checkWaitingListState();
+    // Check waiting list state on page load
+    checkWaitingListState();
 
-        // Form submission handling
-        $('#signupForm').submit(function (event) {
-            event.preventDefault(); // Prevent default form submission
+    // Form submission handling
+    $('#signupForm').submit(function (event) {
+        event.preventDefault(); // Prevent default form submission
 
-            // Use jQuery's post method to send form data
-            $.post('api_proxy.php?endpoint=add_user.php', $(this).serialize(), function (response) {
-                if (response.success) {
-                    // Hide the form and display the confirmation message
-                    $('#signup-section').html(`
+        // Use jQuery's post method to send form data
+        $.post('api_proxy.php?endpoint=add_user.php', $(this).serialize(), function (response) {
+            if (response.success) {
+                // Hide the form and display the confirmation message
+                $('#signup-section').html(`
     <div style="text-align: center; margin-top: 20px;">
         <!-- Large Green Checkmark -->
         <div style="
@@ -100,7 +100,7 @@ function checkWaitingListState() {
         <h2 style="color: #4CAF50;">You've successfully signed up!</h2>
         <p>Click the link below to download your confirmation PDF:</p>
         <!-- Blue Download Button -->
-        <a href="api_proxy.php?endpoint=generate_pdf.php&name=${encodeURIComponent(response.name)}&email=${encodeURIComponent(response.email)}&position=${response.position}&language=${encodeURIComponent(response.language)}" target="_blank" style="
+        <a href="confirmation.pdf" target="_blank" style="
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -119,12 +119,12 @@ function checkWaitingListState() {
         </a>
     </div>
 `);
-                } else {
-                    $('#signupResponse').html(response.message).css("color", "red"); // Display the response message
-                }
-            }, 'json');
-        });
+            } else {
+                $('#signupResponse').html(response.message).css("color", "red"); // Display the response message
+            }
+        }, 'json');
     });
+});
 </script>
 
 </head>
