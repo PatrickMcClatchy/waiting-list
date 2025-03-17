@@ -34,9 +34,21 @@ try {
     $currentDay = $currentDateTime->format('l'); // Full day name (e.g., 'Monday')
     $currentTimestamp = $currentDateTime->getTimestamp();
 
-    error_log("Current Day: {$currentDay}");
-    error_log("Current Time: {$currentDateTime->format('Y-m-d H:i:s')}");
-    error_log("Current Timestamp: {$currentTimestamp}");
+    // Check if the list was manually closed today
+    $stmt = $db->prepare("SELECT value FROM settings WHERE key = :key");
+    $stmt->bindValue(':key', 'manual_close_date', SQLITE3_TEXT);
+    $result = $stmt->execute();
+    $row = $result->fetchArray(SQLITE3_ASSOC);
+    $manualCloseDate = $row ? $row['value'] : '';
+
+    error_log("Manual Close Date: {$manualCloseDate}");
+    error_log("Current Date: {$currentDateTime->format('Y-m-d')}");
+
+    if ($manualCloseDate === $currentDateTime->format('Y-m-d')) {
+        $response['message'] = 'The waiting list was manually closed today.';
+        echo json_encode($response);
+        exit;
+    }
 
     $isOpen = false;
 
@@ -45,14 +57,12 @@ try {
 
         // Skip if the day does not match
         if ($currentDay !== $day) {
-            error_log("Day mismatch - Current: {$currentDay}, Scheduled: {$day}");
             continue;
         }
 
         // Create DateTime object for scheduled time
         $scheduledDateTime = DateTime::createFromFormat('H:i', $time);
         if ($scheduledDateTime === false) {
-            error_log("Invalid time format: $time");
             continue;
         }
 
@@ -67,7 +77,7 @@ try {
         error_log("Scheduled Timestamp: {$scheduledDateTime->getTimestamp()}");
 
         // Compare timestamps - open list if the current time is exactly the same or later
-        if (($currentTimestamp -1) >= $scheduledDateTime->getTimestamp()) {
+        if ($currentTimestamp >= $scheduledDateTime->getTimestamp()) {
             error_log("Match found - Opening waiting list");
             $isOpen = true;
             break;
@@ -86,7 +96,6 @@ try {
         }
     }
 } catch (Exception $e) {
-    error_log("Error: " . $e->getMessage());
     $response['message'] = $e->getMessage();
 }
 

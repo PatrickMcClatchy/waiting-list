@@ -35,6 +35,19 @@ try {
         throw new Exception('Failed to execute the SQL statement.');
     }
 
+    // If the list is manually closed, update the manual close date
+    if ($isOpen == 0) {
+        $currentDate = (new DateTime())->format('Y-m-d');
+        $stmt = $db->prepare("UPDATE settings SET value = :value WHERE key = 'manual_close_date'");
+        $stmt->bindValue(':value', $currentDate, SQLITE3_TEXT);
+        $stmt->execute();
+    } else {
+        // Clear the manual close date if the list is opened
+        $stmt = $db->prepare("UPDATE settings SET value = :value WHERE key = 'manual_close_date'");
+        $stmt->bindValue(':value', '', SQLITE3_TEXT);
+        $stmt->execute();
+    }
+
     // Return a success message
     echo json_encode(['success' => true, 'message' => 'Waiting list state updated successfully.']);
 

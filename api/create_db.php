@@ -62,6 +62,12 @@ try {
     $stmt->bindValue(':value', 'The waiting list is currently closed.', SQLITE3_TEXT);
     $stmt->execute();
 
+    // Insert the manual close date if it doesn't exist
+    $stmt = $db->prepare("INSERT OR IGNORE INTO settings (key, value) VALUES (:key, :value)");
+    $stmt->bindValue(':key', 'manual_close_date', SQLITE3_TEXT);
+    $stmt->bindValue(':value', '', SQLITE3_TEXT);
+    $stmt->execute();
+
     echo "Database and tables setup complete!<br>";
 
 } catch (Exception $e) {
