@@ -58,7 +58,7 @@
                 })
                 .catch(error => {
                     console.error('Error loading waiting list:', error);
-                    alert("An error occurred while loading the waiting list.");
+                    console.error("An error occurred while loading the waiting list.");
                 });
         }
 
@@ -194,7 +194,7 @@ function performUserRemoval(userId) {
                 })
                 .catch(error => {
                     console.error('Error fetching waiting list state:', error);
-                    alert("An error occurred while fetching the waiting list state.");
+                    console.error("An error occurred while fetching the waiting list state.");
                 });
         }
 
@@ -213,9 +213,9 @@ function performUserRemoval(userId) {
                         alert('Failed to fetch scheduled open times.');
                     }
                 })
-                .catch(error => {
+                console.error(error => {
                     console.error('Error fetching scheduled open times:', error);
-                    alert("An error occurred while fetching the scheduled open times.");
+                    console.error("An error occurred while fetching the scheduled open times.");
                 });
         }
 
@@ -237,16 +237,16 @@ function performUserRemoval(userId) {
             if (json.success) {
                 showPopupMessage('Scheduled open times updated successfully!');
             } else {
-                alert('Failed to update scheduled open times: ' + (json.message || 'Unknown error.'));
+                console.error('Failed to update scheduled open times: ' + (json.message || 'Unknown error.'));
             }
         } catch (e) {
             console.error('Invalid JSON response:', text);
-            alert('An error occurred while updating the scheduled open times. Please try again.');
+            console.error('An error occurred while updating the scheduled open times. Please try again.');
         }
     })
     .catch(error => {
         console.error('Network error:', error);
-        alert('An error occurred while updating the scheduled open times.');
+        console.error('An error occurred while updating the scheduled open times.');
     });
 }
 
@@ -274,7 +274,7 @@ function performUserRemoval(userId) {
             })
             .catch(error => {
                 console.error('Error updating waiting list state:', error);
-                alert('An error occurred while updating the waiting list state.');
+                console.error('An error occurred while updating the waiting list state.');
             });
         }
 
@@ -334,7 +334,7 @@ function fetchClosedMessage() {
         })
         .catch(error => {
             console.error('Error fetching closed message:', error);
-            alert('An error occurred while fetching the current closed message.');
+            console.error('An error occurred while fetching the current closed message.');
         });
 }
 
@@ -354,6 +354,29 @@ function fetchClosedMessage() {
     }
 
     document.addEventListener('DOMContentLoaded', fetchClosedMessage);
+
+    function uploadPdf() {
+    const formData = new FormData(document.getElementById('uploadPdfForm'));
+
+    fetch('api_proxy.php?endpoint=upload_pdf.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text()) // Get raw text response
+    .then(text => {
+        console.log('Raw response:', text); // Log the raw response
+        const data = JSON.parse(text); // Parse the JSON
+        if (data.success) {
+            alert('PDF uploaded successfully!');
+        } else {
+            console.error('Failed to upload PDF: ' + (data.message || 'Unknown error.'));
+        }
+    })
+    .catch(error => {
+        console.error('Error uploading PDF:', error);
+        alert('An error occurred while uploading the PDF.');
+    });
+}
     </script>
 </head>
 <body>
@@ -395,6 +418,16 @@ function fetchClosedMessage() {
             </form>
         </div>
     </div>
+    <div class="form-container">
+        <h2>Upload Confirmation PDF</h2>
+        <form id="uploadPdfForm" enctype="multipart/form-data" onsubmit="event.preventDefault(); uploadPdf();">
+            <input type="file" name="pdf" accept="application/pdf" required>
+            <button type="submit">Upload PDF</button>
+        </form>
+        <a href="confirmation.pdf" download>Download Current Confirmation PDF</a>
+    </div>
+
+
 
     <div class="form-container">
         <h2>Update Closed Message</h2>
@@ -405,6 +438,7 @@ function fetchClosedMessage() {
         </form>
     </div>
 
+
     
     <div class="table-container">
         <table id="waitingListTable"></table>
@@ -413,8 +447,8 @@ function fetchClosedMessage() {
     <div id="confirmationModal" class="modal">
         <div class="modal-content">
             <p id="confirmationMessage">Are you sure you want to remove this user?</p>
-            <button id="confirmBtn">Yes</button>
-            <button id="cancelBtn">No</button>
+            <button id="confirmBtn" class="btn">Yes</button>
+            <button id="cancelBtn" class="btn">No</button>
         </div>
     </div>
 </body>
