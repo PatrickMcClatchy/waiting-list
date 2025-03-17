@@ -1,6 +1,9 @@
 <?php
 header('Content-Type: application/json');
 
+// Set the time zone to Germany (Europe/Berlin)
+date_default_timezone_set('Europe/Berlin');
+
 $response = ['success' => false, 'message' => 'The waiting list remains closed.'];
 
 try {
@@ -33,6 +36,7 @@ try {
 
     error_log("Current Day: {$currentDay}");
     error_log("Current Time: {$currentDateTime->format('Y-m-d H:i:s')}");
+    error_log("Current Timestamp: {$currentTimestamp}");
 
     $isOpen = false;
 
@@ -60,9 +64,10 @@ try {
         );
 
         error_log("Scheduled Time: {$scheduledDateTime->format('Y-m-d H:i:s')}");
+        error_log("Scheduled Timestamp: {$scheduledDateTime->getTimestamp()}");
 
-        // Compare timestamps - open list if the current time is later or equal
-        if ($currentTimestamp <= $scheduledDateTime->getTimestamp()) {
+        // Compare timestamps - open list if the current time is exactly the same or later
+        if (($currentTimestamp -1) >= $scheduledDateTime->getTimestamp()) {
             error_log("Match found - Opening waiting list");
             $isOpen = true;
             break;
