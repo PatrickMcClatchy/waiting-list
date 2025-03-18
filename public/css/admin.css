@@ -167,6 +167,10 @@ form button {
     text-align: center;
 }
 
+#back-to-main button:hover {
+    background-color: #5a6268;
+}
+
 form button:hover {
     background-color: #27ae60;
 }

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Settings - Waiting List</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', checkLoginStatus);
+
+        function checkLoginStatus() {
+            fetch('api_proxy.php?endpoint=check_session.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.loggedIn) {
+                        window.location.href = 'login.html';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking login status:', error);
+                    alert('An error occurred. Please try again.');
+                    window.location.href = 'login.html';
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadScheduledOpenTimes();
+            fetchClosedMessage();
+        });
+
+        function loadScheduledOpenTimes() {
+            fetch('api_proxy.php?endpoint=get_scheduled_open_times.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('scheduledOpenTimes').value = data.scheduled_open_times;
+                    } else {
+                        alert('Failed to fetch scheduled open times.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching scheduled open times:', error);
+                });
+        }
+
+        function updateScheduledOpenTimes() {
+            const scheduledOpenTimes = document.getElementById('scheduledOpenTimes').value;
+
+            fetch('api_proxy.php?endpoint=update_scheduled_open_times.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `scheduled_open_times=${encodeURIComponent(scheduledOpenTimes)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showPopupMessage('Scheduled open times updated successfully!');
+                } else {
+                    alert('Failed to update scheduled open times: ' + (data.message || 'Unknown error.'));
+                }
+            })
+            .catch(error => {
+                console.error('Error updating scheduled open times:', error);
+            });
+        }
+
+        function fetchClosedMessage() {
+            fetch('api_proxy.php?endpoint=get_closed_message.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.message) {
+                        document.getElementById('closedMessage').value = data.message;
+                    } else {
+                        alert('Failed to fetch the current closed message: ' + (data.message || 'Unknown error.'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching closed message:', error);
+                });
+        }
+
+        function updateClosedMessage() {
+            const message = $('#closedMessage').val();
+
+            $.post('api_proxy.php?endpoint=update_closed_message.php', { message: message }, function(response) {
+                if (response.success) {
+                    alert('Closed message updated successfully!');
+                } else {
+                    alert('Failed to update closed message: ' + (response.message || 'Unknown error.'));
+                }
+            }, 'json').fail(function(jqXHR, textStatus, errorThrown) {
+                console.error('Error updating closed message:', textStatus, errorThrown);
+                alert('An error occurred while updating the closed message.');
+            });
+        }
+
+        function uploadPdf() {
+            const formData = new FormData(document.getElementById('uploadPdfForm'));
+
+            fetch('api_proxy.php?endpoint=upload_pdf.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('PDF uploaded successfully!');
+                } else {
+                    alert('Failed to upload PDF: ' + (data.message || 'Unknown error.'));
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading PDF:', error);
+                alert('An error occurred while uploading the PDF.');
+            });
+        }
+
+        function showPopupMessage(message, type = 'success') {
+            const popup = document.createElement('div');
+            popup.className = `popup-message ${type === 'error' ? 'error' : ''}`;
+            popup.innerText = message;
+
+            document.body.appendChild(popup);
+
+            setTimeout(() => {
+                popup.classList.add('show');
+            }, 10);
+
+            setTimeout(() => {
+                popup.classList.remove('show');
+                setTimeout(() => {
+                    popup.remove();
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</head>
+<body>
+    <h1>SAGA Waiting List - Admin Settings</h1>
+    <div id="logout">
+        <button onclick="window.location.href='api_proxy.php?endpoint=logout.php'">Logout</button>
+    </div>
+    <div id="back-to-main">
+        <button onclick="window.location.href='admin_dashboard.html'" style="
+            background-color: #6c757d;
+            color: #ffffff;
+            padding: 5px 10px;
+            text-decoration: none;
+            border-radius: 3px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            border: none;
+            position: relative;
+            height: 36px; /* Same height as the logout button */
+        ">
+            <span style="
+                display: inline-block;
+                margin-right: 5px;
+                border-top: 5px solid transparent;
+                border-bottom: 5px solid transparent;
+                border-left: 5px solid #ffffff;
+            "></span>
+            Back
+        </button>
+    </div>
+
+    <style>
+        #back-to-main button:hover {
+            background-color: #5a6268;
+        }
+        .forms-wrapper {
+            margin: 20px 0;
+        }
+        .form-container {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .form-container h2 {
+            margin-top: 0;
+        }
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-container form label {
+            margin-bottom: 5px;
+        }
+        .form-container form input,
+        .form-container form textarea,
+        .form-container form button {
+            margin-bottom: 10px;
+        }
+        .form-container form button {
+            align-self: flex-start;
+        }
+        .form-container a {
+            display: inline-block;
+            margin-top: 10px;
+            background-color: #007BFF;
+            color: #ffffff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .form-container a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+
+    <div class="forms-wrapper">
+        <div class="form-container">
+            <h2>Scheduled List Opening Times</h2>
+            <form onsubmit="event.preventDefault(); updateScheduledOpenTimes();">
+                <label for="scheduledOpenTimes">Scheduled Open Times (e.g., Monday 09:00,Thursday 14:00):</label>
+                <input type="text" id="scheduledOpenTimes" name="scheduledOpenTimes" required>
+                <button type="submit">Update</button>
+            </form>
+        </div>
+
+        <div class="form-container">
+            <h2>Upload Confirmation PDF</h2>
+            <form id="uploadPdfForm" enctype="multipart/form-data" onsubmit="event.preventDefault(); uploadPdf();">
+                <input type="file" name="pdf" accept="application/pdf" required>
+                <button type="submit">Upload PDF</button>
+            </form>
+            <a href="confirmation.pdf" download>Download Current Confirmation PDF</a>
+        </div>
+
+        <div class="form-container">
+            <h2>Update Closed Message</h2>
+            <form id="updateClosedMessageForm" onsubmit="event.preventDefault(); updateClosedMessage();">
+                <label for="closedMessage"></label>
+                <textarea id="closedMessage" name="message" required style="width: 100%; height: 150px;"></textarea>
+                <button type="submit">Update Message</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="instructions-container">
+        <h2>Instructions for the Settings Page</h2>
+        <ul>
+            <li>
+                <strong>Scheduled List Opening Times:</strong> Set the specific days and times when the waiting list will be open for new entries. Enter the times in the format <code>Day HH:MM</code> (e.g., <code>Monday 09:00,Thursday 14:00</code>) and click "Update".
+            </li>
+            <li>
+                <strong>Upload Confirmation PDF:</strong> Upload a new PDF file that users will receive as a confirmation when they join the waiting list. Select a PDF file and click "Upload PDF". You can also download the current confirmation PDF by clicking "Download Current Confirmation PDF".
+            </li>
+            <li>
+                <strong>Update Closed Message:</strong> Update the message displayed to users when the waiting list is closed. Enter the new message in the text area and click "Update Message".
+            </li>
+        </ul>
+    </div>
+    
+    <style>
+        .instructions-container {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .instructions-container h2 {
+            margin-top: 0;
+            font-size: medium;
+        }
+        .instructions-container ul {
+            padding-left: 20px;
+        }
+        .instructions-container li {
+            margin-bottom: 10px;
+            font-size: medium;
+        }
+        .instructions-container code {
+            background-color: #e9ecef;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+
+</body>
+</html>

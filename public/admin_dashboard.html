@@ -389,56 +389,13 @@ function fetchClosedMessage() {
     <div id="controls">
         <button onclick="exportWaitingList()">Export Waiting List</button>
         <button onclick="window.location.reload()">Refresh</button>
+        <button onclick="window.location.href='settings.html'">Settings</button>
         <label for="waitingListToggle" class="switch">
             <input type="checkbox" id="waitingListToggle" onclick="updateToggleState()">
             <span class="slider"></span>
         </label>
         <p id="waitingListStatus">Waiting list is <strong>open</strong>.</p>
     </div>
-    
-
-    <div class="forms-wrapper">
-        <div class="form-container">
-            <h2>Add a new entry</h2>
-            <form id="addUserForm" onsubmit="event.preventDefault(); addUser();">
-                <input type="text" name="name" placeholder="Name" required oninput="updatePreview()">
-                <input type="text" name="email" placeholder="Email or Phone" oninput="updatePreview()">
-                <input type="text" name="comment" placeholder="Comment" oninput="updatePreview()">
-                <input type="text" name="language" placeholder="Language" required oninput="updatePreview()"> <!-- Add name attribute -->
-                <button type="submit">Add User</button>
-            </form>
-        </div>
-
-        <div class="form-container">
-            <h2>Scheduled List Opening Times</h2>
-            <form onsubmit="event.preventDefault(); updateScheduledOpenTimes();">
-                <label for="scheduledOpenTimes">Scheduled Open Times (e.g., Monday 09:00,Thursday 14:00):</label>
-                <input type="text" id="scheduledOpenTimes" name="scheduledOpenTimes" required>
-                <button type="submit">Update</button>
-            </form>
-        </div>
-    </div>
-    <div class="form-container">
-        <h2>Upload Confirmation PDF</h2>
-        <form id="uploadPdfForm" enctype="multipart/form-data" onsubmit="event.preventDefault(); uploadPdf();">
-            <input type="file" name="pdf" accept="application/pdf" required>
-            <button type="submit">Upload PDF</button>
-        </form>
-        <a href="confirmation.pdf" download>Download Current Confirmation PDF</a>
-    </div>
-
-
-
-    <div class="form-container">
-        <h2>Update Closed Message</h2>
-        <form id="updateClosedMessageForm" onsubmit="event.preventDefault(); updateClosedMessage();">
-            <label for="closedMessage"></label>
-            <textarea id="closedMessage" name="message" required></textarea>
-            <button type="submit">Update Message</button>
-        </form>
-    </div>
-
-
     
     <div class="table-container">
         <table id="waitingListTable"></table>
