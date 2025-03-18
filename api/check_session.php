@@ -3,7 +3,7 @@ session_start();
 header('Content-Type: application/json');
 
 // Define a session timeout period in seconds (e.g., 900 seconds = 15 minutes)
-$session_timeout = 30;
+$session_timeout = 900;
 
 // Check if the user is logged in
 if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {

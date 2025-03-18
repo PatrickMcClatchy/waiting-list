@@ -53,7 +53,7 @@
                     if (data.success) {
                         displayWaitingList(data.data);
                     } else {
-                        alert("Failed to load the waiting list.");
+                        console.error("Failed to load the waiting list.");
                     }
                 })
                 .catch(error => {
