@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backup List Export</title>
+    <link rel="stylesheet" type="text/css" href="css/export_style.css">
+    <style>
+        /* General styling for the page */
+        .container {
+            display: flex;
+        }
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        /* Styling for the delete confirmation modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        .modal-header {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+            text-align: center;
+        }
+        .modal-body {
+            padding: 15px;
+            text-align: center;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+        .modal-footer button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-confirm {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-cancel {
+            background-color: #f44336;
+            color: white;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        /* Styled message container */
+        #message-container {
+            margin: 20px;
+            padding: 15px;
+            display: none;
+            border-radius: 5px;
+            font-size: 14px;
+            text-align: center;
+        }
+        #message-container.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        #message-container.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+    <script>
+        // Check if the user is logged in before loading the page content
+        document.addEventListener('DOMContentLoaded', checkLoginStatus);
+
+        function checkLoginStatus() {
+            fetch('api_proxy.php?endpoint=check_session.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.loggedIn) {
+                        window.location.href = 'login.html';
+                    } else {
+                        loadWaitingList();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking login status:', error);
+                    alert('An error occurred. Please try again.');
+                    window.location.href = 'login.html';
+                });
+        }
+
+
+
+        function loadWaitingList() {
+            fetch('api_proxy.php?endpoint=get_backup_list.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const leftTable = document.getElementById('leftTable');
+                        const rightTable = document.getElementById('rightTable');
+
+                        data.data.slice(0, Math.ceil(data.data.length / 2)).forEach(user => {
+                            const row = leftTable.insertRow();
+                            row.innerHTML = `
+                                <td>${user.position}</td>
+                                <td>${user.name}</td>
+                                <td>${user.language}</td>
+                            `;
+                        });
+
+                        data.data.slice(Math.ceil(data.data.length / 2)).forEach(user => {
+                            const row = rightTable.insertRow();
+                            row.innerHTML = `
+                                <td>${user.position}</td>
+                                <td>${user.name}</td>
+                                <td>${user.language}</td>
+                            `;
+                        });
+                    } else {
+                        displayMessage(data.message || "Failed to export waiting list.", 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error exporting waiting list:', error);
+                    displayMessage("An error occurred while exporting the waiting list.", 'error');
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('printButton').addEventListener('click', function() {
+        window.print();
+    });
+});
+
+
+    </script>
+</head>
+<body>
+    <h1>Backup List - Export</h1>
+    <div class="container">
+        <table id="leftTable">
+            <tr>
+                <th>Listenplatz</th>
+                <th>Name</th>
+                <th>(Sprache)</th>
+            </tr>
+        </table>
+        <table id="rightTable">
+            <tr>
+                <th>Listenplatz</th>
+                <th>Name</th>
+                <th>(Sprache)</th>
+            </tr>
+        </table>
+    </div>
+    <button id="printButton">Print</button>
+
+</body>
+</html>
