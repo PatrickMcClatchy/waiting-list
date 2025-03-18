@@ -396,6 +396,17 @@ function fetchClosedMessage() {
         </label>
         <p id="waitingListStatus">Waiting list is <strong>open</strong>.</p>
     </div>
+
+    <div class="form-container">
+        <h2>Add a new entry</h2>
+        <form id="addUserForm" onsubmit="event.preventDefault(); addUser();">
+            <input type="text" name="name" placeholder="Name" required oninput="updatePreview()">
+            <input type="text" name="email" placeholder="Email or Phone" oninput="updatePreview()">
+            <input type="text" name="comment" placeholder="Comment" oninput="updatePreview()">
+            <input type="text" name="language" placeholder="Language" required oninput="updatePreview()"> <!-- Add name attribute -->
+            <button type="submit">Add User</button>
+        </form>
+    </div>
     
     <div class="table-container">
         <table id="waitingListTable"></table>
