@@ -7,7 +7,12 @@
     <link rel="stylesheet" href="css/admin.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', checkLoginStatus);
+        document.addEventListener('DOMContentLoaded', () => {
+            checkLoginStatus;
+    loadScheduledOpenTimes();
+    fetchClosedMessage();
+    loadBackupInfo();  // Call this to update backup info
+});
 
         function checkLoginStatus() {
             fetch('api_proxy.php?endpoint=check_session.php')
