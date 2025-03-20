@@ -177,8 +177,9 @@ function performUserRemoval(userId) {
         }
 
         function exportWaitingList() {
-            window.open('export_waiting_list.html');
-        }
+    window.location.href = 'export_waiting_list.html';
+}
+
 
         function loadToggleState() {
             fetch('api_proxy.php?endpoint=get_waiting_list_state.php')
@@ -381,6 +382,7 @@ function fetchClosedMessage() {
 </head>
 <body>
     <h1>SAGA Waiting List - Admin</h1>
+    
     <div id="logout">
         <button onclick="window.location.href='api_proxy.php?endpoint=logout.php'">Logout</button>
     </div>

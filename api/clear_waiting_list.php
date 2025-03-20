@@ -1,5 +1,11 @@
 <?php
 session_start();
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+
+// Set timezone to +1 (e.g., Paris)
+date_default_timezone_set('Europe/Paris');
 
 // Check if the user is logged in
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
@@ -8,38 +14,50 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 }
 
 try {
-    // Define the main database and backup directory
-    $dbPath = '../waiting_list.db';
-    $backupDir = '../backups/';
-    
-    // Step 1: Generate a timestamped backup filename
-    $timestamp = date('Y-m-d_H-i-s');
-    $backupFile = $backupDir . 'waiting_list_backup_' . $timestamp . '.db'; // Backup with timestamp
+    // Use __DIR__ to build absolute paths
+    $dbPath = __DIR__ . '/../waiting_list.db';
+    $backupDir = __DIR__ . '/../backups/';
 
-    // Step 2: Check if the backup directory exists, create it if not
+    // Generate a unique timestamp (using microtime for extra uniqueness)
+    $timestamp = date('Y-m-d_H-i-s') . '_' . str_replace('.', '', microtime(true));
+    $backupFile = $backupDir . 'waiting_list_backup_' . $timestamp . '.db';
+
+    // Ensure the backup directory exists
     if (!file_exists($backupDir)) {
-        mkdir($backupDir, 0777, true); // Create backup directory if it doesn't exist
+        if (!mkdir($backupDir, 0777, true)) {
+            throw new Exception("Failed to create backup directory: " . $backupDir);
+        }
     }
 
-    // Step 3: Delete the previous backup (if exists)
-    // Get the list of backup files and delete the oldest one
+    // Delete any existing backup files
     $existingBackups = glob($backupDir . 'waiting_list_backup_*.db');
-    foreach ($existingBackups as $backup) {
-        unlink($backup); // Delete the existing backup
+    foreach ($existingBackups as $file) {
+        if (!unlink($file)) {
+            error_log("Failed to delete backup file: $file");
+        }
     }
 
-    // Step 4: Copy the current database to the new backup file
+    // Verify deletion (optional debugging)
+    $existingAfter = glob($backupDir . 'waiting_list_backup_*.db');
+    if (!empty($existingAfter)) {
+        error_log("Some backup files still exist: " . print_r($existingAfter, true));
+    }
+
+    // Copy the main database file to create the new backup
     if (!copy($dbPath, $backupFile)) {
-        throw new Exception('Failed to create backup.');
+        $error = error_get_last();
+        throw new Exception("Failed to create backup: " . $error['message']);
     }
 
-    // Step 5: Open the database and clear the waiting list
+    // Open the main database and clear the waiting list
     $db = new SQLite3($dbPath);
     $db->exec('DELETE FROM waiting_list');
 
-    // Step 6: Send the response
-    echo json_encode(['success' => true, 'message' => 'Waiting list cleared successfully', 'backup_file' => $backupFile]);
-
+    echo json_encode([
+        'success' => true, 
+        'message' => 'Waiting list cleared successfully', 
+        'backup_file' => $backupFile
+    ]);
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
 }
