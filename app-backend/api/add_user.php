@@ -22,7 +22,8 @@ if (!$responseKeys['success']) {
 
 // Connect to the database
 try {
-    $db = new SQLite3('../waiting_list.db');
+    $db = new SQLite3(__DIR__ . '/../waiting_list.db');
+
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $e->getMessage()]);
     exit;

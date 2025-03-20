@@ -7,7 +7,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 try {
-    $db = new SQLite3('../waiting_list.db');
+    $db = new SQLite3(__DIR__ .'/../waiting_list.db');
     if (!$db) {
         throw new Exception('Failed to open database: ' . $db->lastErrorMsg());
     }
@@ -19,7 +19,6 @@ try {
 
     $stmt->bindValue(':key', 'closed_message', SQLITE3_TEXT);
     $result = $stmt->execute();
-    
     if (!$result) {
         throw new Exception('Error executing the query: ' . $db->lastErrorMsg());
     }

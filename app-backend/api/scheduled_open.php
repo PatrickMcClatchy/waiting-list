@@ -8,7 +8,7 @@ $response = ['success' => false, 'message' => 'The waiting list remains closed.'
 
 try {
     // Connect to the database
-    $db = new SQLite3('../waiting_list.db');
+    $db = new SQLite3(__DIR__ .'/../waiting_list.db');
 
     // Fetch the scheduled open times from the database
     $stmt = $db->prepare("SELECT value FROM settings WHERE key = :key");

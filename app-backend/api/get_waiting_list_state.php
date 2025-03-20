@@ -1,6 +1,6 @@
 <?php
 try {
-    $db = new SQLite3('../waiting_list.db');
+    $db = new SQLite3(__DIR__ . '/../waiting_list.db');
     
     if (!$db) {
         throw new Exception('Unable to connect to the database.');

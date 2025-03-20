@@ -5,8 +5,8 @@ error_reporting(E_ALL);
 
 header('Content-Type: application/json');
 
-// Define the path to the backend API folder
-$apiPath = realpath(__DIR__ . '/../api'); // Ensure the correct path is used
+// Define the path to the backend API folder (now in `app-backend/api/`)
+$apiPath = realpath(__DIR__ . '/../../app-backend/api'); // Adjusted path
 
 // Validate and sanitize the requested endpoint
 $endpoint = $_GET['endpoint'] ?? null;
@@ -28,18 +28,15 @@ if (!file_exists($targetFile)) {
 
 // If the requested endpoint is PDF generation, handle it differently
 if ($endpoint === 'generate_pdf.php') {
-    // Set the response type to binary PDF
     header('Content-Type: application/pdf');
     header('Content-Disposition: attachment; filename="waiting_list_confirmation.pdf"');
 
-    // Include the PDF generation logic (this will output the PDF directly)
     include $targetFile;
     exit;
 }
 
 // Include and execute the target backend script
 try {
-    // Include the backend script safely
     include $targetFile;
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'Error including endpoint: ' . $e->getMessage()]);

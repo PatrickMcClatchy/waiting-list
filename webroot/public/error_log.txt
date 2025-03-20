@@ -1,0 +1,7 @@
+[08-Jan-2025 13:32:33 UTC] PHP Deprecated:  Constant FILTER_SANITIZE_STRING is deprecated in /Users/pad/Desktop/coding/waiting-list/api/update_closed_message.php on line 20
+[20-Mar-2025 10:10:00 UTC] PHP Warning:  SQLite3::prepare(): Unable to prepare statement: no such table: settings in /Users/paddy/CODE/waiting-list/app-backend/api/update_closed_message.php on line 29
+[20-Mar-2025 10:10:00 UTC] PHP Fatal error:  Uncaught Error: Call to a member function bindValue() on false in /Users/paddy/CODE/waiting-list/app-backend/api/update_closed_message.php:30
+Stack trace:
+#0 /Users/paddy/CODE/waiting-list/webroot/public/api_proxy.php(40): include()
+#1 {main}
+  thrown in /Users/paddy/CODE/waiting-list/app-backend/api/update_closed_message.php on line 30

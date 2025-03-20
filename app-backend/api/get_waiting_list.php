@@ -6,7 +6,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 }
 
 try {
-    $db = new SQLite3('../waiting_list.db');
+    $db = new SQLite3(__DIR__ . '/../waiting_list.db');
     $results = $db->query('SELECT * FROM waiting_list ORDER BY position ASC');
     
     $waitingList = [];

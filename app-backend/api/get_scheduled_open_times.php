@@ -8,7 +8,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 }
 
 try {
-    $db = new SQLite3('../waiting_list.db');
+    $db = new SQLite3(__DIR__ . '/../waiting_list.db');
     $stmt = $db->prepare("SELECT value FROM settings WHERE key = :key");
     $stmt->bindValue(':key', 'scheduled_open_times', SQLITE3_TEXT);
     $result = $stmt->execute();

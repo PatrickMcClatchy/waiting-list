@@ -7,12 +7,6 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Check if the user is logged in
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-    exit;
-}
-
 // Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Sanitize input
@@ -25,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         // Connect to the SQLite database
-        $db = new SQLite3('../waiting_list.db');
+        $db = new SQLite3(__DIR__ . '/../waiting_list.db');
         if (!$db) {
             throw new Exception('Failed to connect to the database');
         }

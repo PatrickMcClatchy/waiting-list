@@ -7,7 +7,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
 try {
     // Get the list of backup files
-    $backupFiles = glob('../backups/waiting_list_backup*.db');
+    $backupFiles = glob(__DIR__ . '/../backups/waiting_list_backup*.db');
     
     // Check if we found any files
     if (empty($backupFiles)) {

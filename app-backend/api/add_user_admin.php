@@ -13,7 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($name) {
         try {
-            $db = new SQLite3('../waiting_list.db');
+            $db = new SQLite3(__DIR__ . '/../waiting_list.db');
+
 
             // Get the current maximum position
             $result = $db->query('SELECT COALESCE(MAX(position), 0) AS max_position FROM waiting_list');
