@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Waiting List</title>
-    <link rel="stylesheet" href="css/main.css">   
+    <link rel="stylesheet" href="/public/css/main.css">   
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <base href="../public/index.html">
+
 
     <style>
         .g-recaptcha {
@@ -98,7 +100,7 @@ function checkWaitingListState() {
         </div>
         <!-- Success Message -->
         <h2 style="color: #4CAF50;">You've successfully signed up!</h2>
-        <p>Click the link below to download your confirmation PDF:</p>
+        <p>Click the link below to download important information for your visit:</p>
         <!-- Blue Download Button -->
         <a href="confirmation.pdf" target="_blank" style="
             display: inline-flex;
@@ -115,7 +117,7 @@ function checkWaitingListState() {
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
                 <path d="M12 5v14M19 12l-7 7-7-7"/>
             </svg>
-            Download Confirmation PDF
+            SAGA Visit Information
         </a>
     </div>
 `);
@@ -134,22 +136,13 @@ function checkWaitingListState() {
         <!-- Sign-up Section -->
         <section id="signup-section">
             <header>
-                <h1>Join Our Waiting List</h1>
+                <h1>Join the SAGA Waiting List</h1>
             </header>
             <form id="signupForm">
                 <input type="text" name="name" placeholder="Name" required>
                 <input type="text" name="email" placeholder="Phone or E-Mail" required>
                 <textarea name="comment" placeholder="Comment"></textarea>
-            
-                <!-- Add Language Dropdown -->
-                <select name="language" required>
-                    <option value="" disabled selected>Select your language</option>
-                    <option value="English">English</option>
-                    <option value="Spanish">Spanish</option>
-                    <option value="French">French</option>
-                    <option value="German">German</option>
-                    <option value="Other">Other</option>
-                </select>
+                <input type="text" id="language" name="language" placeholder="Language">
             
                 <div class="g-recaptcha" 
                      data-sitekey="6LeK9oIqAAAAAJQR2aXqxZiY-TDG4BQglyC1qTNq" 
@@ -161,11 +154,6 @@ function checkWaitingListState() {
 
             <div id="signupResponse"></div>
         </section>
-
-        <!-- Login Link -->
-        <div class="login-link">
-            <p><a href="login.html" target="_blank">Log in</a></p>
-        </div>
     </div>
 </body>
 </html>

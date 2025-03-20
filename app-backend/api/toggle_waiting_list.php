@@ -1,7 +1,7 @@
 <?php
 try {
     // Create or open the SQLite database
-    $db = new SQLite3('../waiting_list.db');
+    $db = new SQLite3(__DIR__.'/../waiting_list.db');
 
     // Check if the database connection is valid
     if (!$db) {

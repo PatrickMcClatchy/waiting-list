@@ -381,22 +381,26 @@ function fetchClosedMessage() {
     </script>
 </head>
 <body>
-    <h1>SAGA Waiting List - Admin</h1>
-    
+    <div>
+
+    </div>
     <div id="logout">
         <button onclick="window.location.href='api_proxy.php?endpoint=logout.php'">Logout</button>
+        <h1>SAGA Waiting List - Admin</h1>
     </div>
-
+    
+<div>
+    <label for="waitingListToggle" class="switch">
+        <input type="checkbox" id="waitingListToggle" onclick="updateToggleState()">
+        <span class="slider"></span>
+    </label>
+    <p id="waitingListStatus">Waiting list is <strong>open</strong>.</p>
+</div>
 
     <div id="controls">
         <button onclick="exportWaitingList()">Export Waiting List</button>
         <button onclick="window.location.reload()">Refresh</button>
         <button onclick="window.location.href='settings.html'">Settings</button>
-        <label for="waitingListToggle" class="switch">
-            <input type="checkbox" id="waitingListToggle" onclick="updateToggleState()">
-            <span class="slider"></span>
-        </label>
-        <p id="waitingListStatus">Waiting list is <strong>open</strong>.</p>
     </div>
 
     <div class="form-container">
@@ -409,6 +413,38 @@ function fetchClosedMessage() {
             <button type="submit">Add User</button>
         </form>
     </div>
+    
+    <div class="instructions-container">
+        <h2>Instructions</h2>
+        <ul>
+        </ul>
+    </div>
+    
+    <style>
+        .instructions-container {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .instructions-container h2 {
+            margin-top: 0;
+            font-size: medium;
+        }
+        .instructions-container ul {
+            padding-left: 20px;
+        }
+        .instructions-container li {
+            margin-bottom: 10px;
+            font-size: medium;
+        }
+        .instructions-container code {
+            background-color: #e9ecef;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
     
     <div class="table-container">
         <table id="waitingListTable"></table>

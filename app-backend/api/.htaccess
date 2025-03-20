@@ -1,0 +1,6 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Allow access only via api_proxy.php
+    RewriteCond %{REQUEST_URI} !^/public/api_proxy.php
+    RewriteRule ^(.*)$ - [F,L]
+</IfModule>

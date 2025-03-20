@@ -36,8 +36,8 @@ h2 {
 /* Controls Section */
 #controls {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: left;
+    align-items: left;
     gap: 15px; /* Spacing between buttons and switch */
     margin-bottom: 20px;
 }
