@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'], $_POST['directi
     $direction = $_POST['direction'];
 
     try {
-        $db = new SQLite3('../waiting_list.db');
+        $db = new SQLite3(__DIR__ . '/../waiting_list.db');
         $currentUser = $db->querySingle("SELECT id, position FROM waiting_list WHERE id = $id", true);
 
         if ($currentUser) {

@@ -378,6 +378,21 @@ function fetchClosedMessage() {
         alert('An error occurred while uploading the PDF.');
     });
 }
+
+function loadBackupInfo() {
+            fetch('api_proxy.php?endpoint=get_backup_info.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('backupDate').innerText = data.backup_date;
+                    } else {
+                        alert('Failed to fetch backup information.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching backup info:', error);
+                });
+        }
     </script>
 </head>
 <body>
@@ -397,6 +412,7 @@ function fetchClosedMessage() {
     <p id="waitingListStatus">Waiting list is <strong>open</strong>.</p>
 </div>
 
+</div>
     <div id="controls">
         <button onclick="exportWaitingList()">Export Waiting List</button>
         <button onclick="window.location.reload()">Refresh</button>
@@ -414,6 +430,12 @@ function fetchClosedMessage() {
         </form>
     </div>
     
+
+<div class="form-container">
+    <h2>Last List:</h2>
+    <p>Date: <span id="backupDate">Loading...</span></p>
+    <a href="export_backup_list.html" class="button">Export Last List</a>
+</div>
     <div class="instructions-container">
         <h2>Instructions</h2>
         <ul>

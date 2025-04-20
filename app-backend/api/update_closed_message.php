@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        $db = new SQLite3('../waiting_list.db');
+        $db = new SQLite3(__DIR__ . '/../waiting_list.db');
         $stmt = $db->prepare("UPDATE settings SET value = :message WHERE key = 'closed_message'");
         $stmt->bindValue(':message', $message, SQLITE3_TEXT);
         $stmt->execute();

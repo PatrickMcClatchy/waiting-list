@@ -4,7 +4,7 @@ try {
     require_once('update_waiting_list_state.php'); //
     
     // Connect to the database
-    $db = new SQLite3('../waiting_list.db');
+    $db = new SQLite3(__DIR__ . '/../waiting_list.db');
     
     if (!$db) {
         throw new Exception('Unable to connect to the database.');
