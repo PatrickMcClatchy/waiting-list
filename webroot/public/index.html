@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Waiting List</title>
-    <link rel="stylesheet" href="/public/css/main.css">   
+    <link rel="stylesheet" href="/css/main.css">   
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <base href="../public/index.html">
@@ -35,7 +35,7 @@
 // Function to check if the waiting list is open
 // Function to check if the waiting list is open
 function checkWaitingListState() {
-    $.get('api_proxy.php?endpoint=get_waiting_list_state.php', function(response) {
+    $.get('../api_proxy.php?endpoint=get_waiting_list_state.php', function(response) {
         console.log('get_waiting_list_state response:', response); // Log the response to the console for debugging
 
         if (response.success) {
