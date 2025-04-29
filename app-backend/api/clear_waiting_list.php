@@ -3,7 +3,6 @@ session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-
 // Set timezone to +1 (e.g., Paris)
 date_default_timezone_set('Europe/Paris');
 
@@ -29,18 +28,20 @@ try {
         }
     }
 
-    // Delete any existing backup files
+    // Delete any existing backup files beyond the most recent three
     $existingBackups = glob($backupDir . 'waiting_list_backup_*.db');
-    foreach ($existingBackups as $file) {
-        if (!unlink($file)) {
-            error_log("Failed to delete backup file: $file");
-        }
-    }
+    usort($existingBackups, function ($a, $b) {
+        return filemtime($b) - filemtime($a); // Sort by last modified time (newest first)
+    });
 
-    // Verify deletion (optional debugging)
-    $existingAfter = glob($backupDir . 'waiting_list_backup_*.db');
-    if (!empty($existingAfter)) {
-        error_log("Some backup files still exist: " . print_r($existingAfter, true));
+    // Keep only the three most recent backups
+    if (count($existingBackups) > 3) {
+        $backupsToDelete = array_slice($existingBackups, 3); // Get backups beyond the third most recent
+        foreach ($backupsToDelete as $file) {
+            if (!unlink($file)) {
+                error_log("Failed to delete backup file: $file");
+            }
+        }
     }
 
     // Copy the main database file to create the new backup
