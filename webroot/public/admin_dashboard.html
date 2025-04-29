@@ -27,12 +27,12 @@
                 });
         }
 
-        // Load the waiting list and toggle state on page load
         document.addEventListener('DOMContentLoaded', () => {
-            loadWaitingList();
-            loadToggleState();
-            loadScheduledOpenTimes();
-        });
+    loadWaitingList();
+    loadToggleState();
+    loadScheduledOpenTimes();
+    loadBackupInfo(); // Ensure this function is called
+});
 
         document.addEventListener('DOMContentLoaded', () => {
             fetch('api_proxy.php?endpoint=scheduled_open.php')
@@ -431,11 +431,11 @@ function loadBackupInfo() {
     </div>
     
 
-<div class="form-container">
-    <h2>Last List:</h2>
-    <p>Date: <span id="backupDate">Loading...</span></p>
-    <a href="export_backup_list.html" class="button">Export Last List</a>
-</div>
+    <div class="form-container">
+        <h2>Last List:</h2>
+        <p>Date: <span id="backupDate">Loading...</span></p>
+        <a href="export_backup_list.html" class="button">Export Last List</a>
+    </div>
     <div class="instructions-container">
         <h2>Instructions</h2>
         <ul>
