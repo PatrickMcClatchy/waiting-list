@@ -78,49 +78,50 @@ function checkWaitingListState() {
         event.preventDefault(); // Prevent default form submission
 
         // Use jQuery's post method to send form data
-        $.post('api_proxy.php?endpoint=add_user.php', $(this).serialize(), function (response) {
-            if (response.success) {
-                // Hide the form and display the confirmation message
-                $('#signup-section').html(`
-    <div style="text-align: center; margin-top: 20px;">
-        <!-- Large Green Checkmark -->
-        <div style="
-            display: inline-block;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background-color: #4CAF50;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px auto;">
-            <svg class=checkmark xmlns="http://www.w3.org/2000/svg" width="60px" height="60px" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 6L9 17l-5-5"/>
-            </svg>
-        </div>
-        <!-- Success Message -->
-        <h2 style="color: #4CAF50;">You've successfully signed up!</h2>
-        <p>Click the link below to download important information for your visit:</p>
-        <!-- Blue Download Button -->
-        <a href="confirmation.pdf" target="_blank" style="
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #007BFF;
-            color: #ffffff;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 16px;
-            margin-top: 10px;">
-            <!-- Download Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
-                <path d="M12 5v14M19 12l-7 7-7-7"/>
-            </svg>
-            SAGA Visit Information
-        </a>
-    </div>
-`);
+        $.post('../api_proxy.php?endpoint=add_user.php', $(this).serialize(), function (response) {
+        if (response.success) {
+            // Hide the form and display the confirmation message with the user's position
+            $('#signup-section').html(`
+                <div style="text-align: center; margin-top: 20px;">
+                    <!-- Large Green Checkmark -->
+                    <div style="
+                        display: inline-block;
+                        width: 100px;
+                        height: 100px;
+                        border-radius: 50%;
+                        background-color: #4CAF50;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin: 0 auto 20px auto;">
+                        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" width="60px" height="60px" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 6L9 17l-5-5"/>
+                        </svg>
+                    </div>
+                    <!-- Success Message -->
+                    <h2 style="color: #4CAF50;">You've successfully signed up!</h2>
+                    <p>Your position in the waiting list is: <strong>#${response.position}</strong></p>
+                    <p>Click the link below to download important information for your visit:</p>
+                    <!-- Blue Download Button -->
+                    <a href="../confirmation.pdf" target="_blank" style="
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        background-color: #007BFF;
+                        color: #ffffff;
+                        padding: 10px 20px;
+                        text-decoration: none;
+                        border-radius: 5px;
+                        font-size: 16px;
+                        margin-top: 10px;">
+                        <!-- Download Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                            <path d="M12 5v14M19 12l-7 7-7-7"/>
+                        </svg>
+                        SAGA Visit Information
+                    </a>
+                </div>
+            `);
             } else {
                 $('#signupResponse').html(response.message).css("color", "red"); // Display the response message
             }
@@ -157,3 +158,4 @@ function checkWaitingListState() {
     </div>
 </body>
 </html>
+

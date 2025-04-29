@@ -37,7 +37,10 @@ if ($endpoint === 'generate_pdf.php') {
 
 // Include and execute the target backend script
 try {
+    ob_start(); // Start output buffering
     include $targetFile;
+    $output = ob_get_clean(); // Get everything that was output
+    echo $output;
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'Error including endpoint: ' . $e->getMessage()]);
 }
